@@ -79,14 +79,14 @@ export const PlateSection: React.FC = () => {
             </div>
 
             {/* Right Image */}
-            <div className="lg:col-span-5">
-              <div className="relative rounded-2xl overflow-hidden border border-white/15 shadow-2xl group">
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative rounded-2xl overflow-hidden border border-white/15 shadow-2xl group max-w-sm w-full bg-card/60 backdrop-blur-sm">
                 <img
-                  src="/images/google_plate.webp"
+                  src={config.plateImage || '/images/google_plate_real.jpg'}
                   alt="Placa Google de avaliações com QR Code e NFC"
-                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-auto max-h-[460px] object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-4 left-4 right-4 text-xs font-medium text-white/90 glass p-2.5 rounded-xl border border-white/10 text-center">
                   Display físico acrílico com NFC e QR Code de alta precisão
                 </div>

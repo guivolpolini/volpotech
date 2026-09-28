@@ -611,6 +611,20 @@ export const AdminPage: React.FC = () => {
                   className="w-full px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm focus:border-primary outline-none"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  URL da Imagem da Placa
+                </label>
+                <input
+                  type="text"
+                  value={localConfig.plateImage || '/images/google_plate_real.jpg'}
+                  onChange={(e) =>
+                    setLocalConfig({ ...localConfig, plateImage: e.target.value })
+                  }
+                  className="w-full px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm focus:border-primary outline-none"
+                />
+              </div>
             </div>
 
             <div className="flex justify-end pt-4">

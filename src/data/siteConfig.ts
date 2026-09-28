@@ -14,6 +14,7 @@ export interface SiteConfig {
   plansCtaDestination?: 'whatsapp' | 'orcamento';
   plateTitle: string;
   plateSubtitle: string;
+  plateImage?: string;
   contact: {
     whatsapp: string; // Ex: '5511999999999' - trocar pelo número real
     whatsappDisplay: string;
@@ -44,6 +45,7 @@ export const siteConfig: SiteConfig = {
   plateTitle: 'Placa Google de Avaliações',
   plateSubtitle:
     'Display personalizado com QR Code e NFC para que seus clientes avaliem seu negócio no Google em segundos.',
+  plateImage: '/images/google_plate_real.jpg',
   contact: {
     whatsapp: '5511999999999', // Configure o WhatsApp real da VolpoTech aqui
     whatsappDisplay: '(11) 99999-9999',
