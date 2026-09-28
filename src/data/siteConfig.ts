@@ -10,6 +10,8 @@ export interface SiteConfig {
   finalSubtitle: string;
   finalCta: string;
   plansDisclaimer: string;
+  hidePrices?: boolean;
+  plansCtaDestination?: 'whatsapp' | 'orcamento';
   plateTitle: string;
   plateSubtitle: string;
   contact: {
@@ -25,18 +27,20 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: 'VolpoTech',
-  tagline: 'Sites profissionais por assinatura sem taxa de criação',
+  tagline: 'Sites profissionais e soluções digitais sob medida',
   heroTitle: 'Sua empresa mais profissional no digital.',
   heroSubtitle:
     'Criamos sites modernos e soluções digitais para ajudar sua empresa a ser encontrada, gerar contatos e vender mais.',
-  heroBadge: 'Site profissional sem taxa de criação. A partir de R$ 69,90/mês.',
-  heroCtaPrimary: 'Quero meu site',
+  heroBadge: 'Sites profissionais com orçamento sob medida para o seu negócio.',
+  heroCtaPrimary: 'Solicitar orçamento',
   heroCtaSecondary: 'Ver portfólio',
   finalTitle: 'Sua empresa já está preparada para ser encontrada na internet?',
   finalSubtitle:
-    'Comece hoje. Sem taxa de criação, sem complicação. Apenas a mensalidade do seu plano.',
-  finalCta: 'Começar agora',
-  plansDisclaimer: 'Sem taxa de criação. Você paga apenas a mensalidade.',
+    'Transforme sua presença digital com um projeto sob medida para os seus objetivos.',
+  finalCta: 'Solicitar proposta',
+  plansDisclaimer: 'Orçamento sob medida de acordo com o escopo do seu projeto.',
+  hidePrices: true,
+  plansCtaDestination: 'whatsapp',
   plateTitle: 'Placa Google de Avaliações',
   plateSubtitle:
     'Display personalizado com QR Code e NFC para que seus clientes avaliem seu negócio no Google em segundos.',
@@ -51,9 +55,10 @@ export const siteConfig: SiteConfig = {
   },
 };
 
-export function getWhatsAppUrl(customMessage?: string): string {
+export function getWhatsAppUrl(customMessage?: string, phoneNumber?: string): string {
+  const number = phoneNumber || siteConfig.contact.whatsapp;
   const defaultMsg =
     'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.';
   const msg = encodeURIComponent(customMessage || defaultMsg);
-  return `https://wa.me/${siteConfig.contact.whatsapp}?text=${msg}`;
+  return `https://wa.me/${number}?text=${msg}`;
 }

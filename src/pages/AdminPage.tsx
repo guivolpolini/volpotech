@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Lock,
@@ -71,6 +71,9 @@ export const AdminPage: React.FC = () => {
 
   // General Config Local State
   const [localConfig, setLocalConfig] = useState(config);
+  useEffect(() => {
+    setLocalConfig(config);
+  }, [config]);
 
   const handleSaveGeneralConfig = (e: React.FormEvent) => {
     e.preventDefault();
@@ -937,6 +940,82 @@ export const AdminPage: React.FC = () => {
                 <Plus className="w-4 h-4" />
                 <span>Novo Plano</span>
               </button>
+            </div>
+
+            {/* Toggle: Hide or Show prices in public site */}
+            <div className="p-5 rounded-2xl glass border border-white/10 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-white">
+                      Modo "Orçamento Sob Medida" (Ocultar Preços Públicos)
+                    </h3>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                        config.hidePrices
+                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      }`}
+                    >
+                      {config.hidePrices ? 'Preços Ocultos (Sob Consulta)' : 'Preços Visíveis em R$'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Quando ativado, os valores em R$ ficam ocultos no site. Os planos exibem "Sob Consulta / Sob Medida" e os botões direcionam o cliente para você combinar o valor pessoalmente.
+                  </p>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={config.hidePrices ?? true}
+                    onChange={(e) => {
+                      updateConfig({ hidePrices: e.target.checked });
+                      showToast(
+                        e.target.checked
+                          ? 'Preços ocultos: exibindo Sob Consulta'
+                          : 'Preços visíveis em R$ no site'
+                      );
+                    }}
+                    className="sr-only peer"
+                  />
+                  <div className="w-12 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <div className="pt-3 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <span className="text-gray-300 font-medium">
+                  Ação ao clicar no botão do plano:
+                </span>
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white">
+                    <input
+                      type="radio"
+                      name="plansCtaDestination"
+                      checked={config.plansCtaDestination !== 'orcamento'}
+                      onChange={() => {
+                        updateConfig({ plansCtaDestination: 'whatsapp' });
+                        showToast('Botão configurado para abrir WhatsApp.');
+                      }}
+                      className="text-primary focus:ring-0"
+                    />
+                    <span>Abrir WhatsApp (com mensagem do plano)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white">
+                    <input
+                      type="radio"
+                      name="plansCtaDestination"
+                      checked={config.plansCtaDestination === 'orcamento'}
+                      onChange={() => {
+                        updateConfig({ plansCtaDestination: 'orcamento' });
+                        showToast('Botão configurado para página de orçamento.');
+                      }}
+                      className="text-primary focus:ring-0"
+                    />
+                    <span>Página de Orçamento (/orcamento)</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

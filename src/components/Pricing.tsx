@@ -60,7 +60,22 @@ export const Pricing: React.FC = () => {
                 </div>
 
                 <div className="mb-8 pb-6 border-b border-white/10">
-                  {plan.setupPrice !== undefined && plan.setupPrice > 0 ? (
+                  {config.hidePrices ? (
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-accent text-xs font-semibold uppercase tracking-wider mb-2.5">
+                        <Sparkles className="w-3.5 h-3.5 text-accent" />
+                        <span>Sob Consulta</span>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl sm:text-4xl font-heading font-extrabold text-white tracking-tight">
+                          Sob Medida
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                        Valor personalizado de acordo com o escopo e as necessidades do seu projeto.
+                      </p>
+                    </div>
+                  ) : plan.setupPrice !== undefined && plan.setupPrice > 0 ? (
                     <div className="space-y-1">
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -123,17 +138,35 @@ export const Pricing: React.FC = () => {
               </div>
 
               <div className="pt-4">
-                <Link
-                  to={`/orcamento?plano=${plan.id}`}
-                  className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm transition-all ${
-                    plan.featured
-                      ? 'bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/30 hover:-translate-y-0.5'
-                      : 'bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:-translate-y-0.5'
-                  }`}
-                >
-                  <span>Assinar agora</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                {config.plansCtaDestination === 'orcamento' ? (
+                  <Link
+                    to={`/orcamento?plano=${plan.id}`}
+                    className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm transition-all ${
+                      plan.featured
+                        ? 'bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/30 hover:-translate-y-0.5'
+                        : 'bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:-translate-y-0.5'
+                    }`}
+                  >
+                    <span>{config.hidePrices ? 'Solicitar Proposta' : 'Assinar agora'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <a
+                    href={`https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+                      `Olá! Tenho interesse no plano "${plan.name}" da VolpoTech e gostaria de solicitar uma proposta personalizada.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm transition-all ${
+                      plan.featured
+                        ? 'bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/30 hover:-translate-y-0.5'
+                        : 'bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:-translate-y-0.5'
+                    }`}
+                  >
+                    <span>{config.hidePrices ? 'Solicitar Proposta no WhatsApp' : 'Começar no WhatsApp'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                )}
               </div>
             </div>
           ))}

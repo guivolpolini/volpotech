@@ -35,14 +35,20 @@ export const Hero: React.FC = () => {
             {/* Value Proposition Box */}
             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 max-w-lg mx-auto lg:mx-0 flex items-center gap-3 text-sm">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 font-bold">
-                R$
+                {config.hidePrices ? <Sparkles className="w-5 h-5 text-emerald-400" /> : 'R$'}
               </div>
               <div className="text-left">
                 <span className="font-semibold text-white block">
-                  Site profissional sem taxa de criação
+                  {config.hidePrices ? 'Projetos 100% personalizados' : 'Site profissional sem taxa de criação'}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  A partir de apenas <strong className="text-emerald-400 font-semibold">R$ 69,90/mês</strong> com tudo incluso.
+                  {config.hidePrices ? (
+                    'Design moderno, hospedagem rápida e manutenção com proposta sob medida.'
+                  ) : (
+                    <>
+                      A partir de apenas <strong className="text-emerald-400 font-semibold">R$ 69,90/mês</strong> com tudo incluso.
+                    </>
+                  )}
                 </span>
               </div>
             </div>
