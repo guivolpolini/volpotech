@@ -1,0 +1,229 @@
+[
+  {
+    "short_description": "Site institucional para ótica em São Caetano do Sul, com apresentação de armações, lentes e multifocais.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/a73a4985c_imagem_2026-09-22_000634071.png",
+    "description": "Site desenvolvido para a Ótica G&G Visão, com apresentação das armações, óculos de grau, lentes multifocais, confecção e ajustes, além do atendimento personalizado da loja em São Caetano do Sul.",
+    "title": "Ótica G&G Visão",
+    "url": "https://g-g-vis-o-optical-boutique-otlqgz.sticklight.app",
+    "features": [
+      "Apresentação de produtos/serviços",
+      "Design responsivo",
+      "Identidade visual própria",
+      "Página institucional"
+    ],
+    "problem": "A Ótica G&G Visão não tinha um site que apresentasse seus produtos e diferenciais (atendimento personalizado, preço justo) para atrair novos clientes online.",
+    "solution": "Criação de um site institucional destacando os produtos (armações, lentes, multifocais) e serviços (confecção e ajustes), reforçando o posicionamento de atendimento 5 estrelas e preço justo.",
+    "tech_stack": [
+      "React",
+      "Tailwind CSS"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/61c710a8e_imagem_2026-09-22_000653006.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/1b64c2164_imagem_2026-09-22_000707071.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/e7fbcf0f3_imagem_2026-09-22_000732187.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1f118182771f2149c9b15",
+    "created_date": "2026-09-22T03:08:08.135000",
+    "updated_date": "2026-09-22T03:08:08.135000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_1_main.png",
+    "local_gallery": [
+      "/images/project_1_gallery_1.png",
+      "/images/project_1_gallery_2.png",
+      "/images/project_1_gallery_3.png"
+    ]
+  },
+  {
+    "short_description": "Site institucional para barbearia em São Caetano do Sul, com apresentação de serviços de corte, barba e sobrancelha.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/b7d08a7c7_imagem_2026-09-22_000016338.png",
+    "description": "Site desenvolvido para a Barbearia Pedrão, com foco nos serviços oferecidos — corte, barba, combo e sobrancelha — em São Caetano do Sul. O site apresenta a identidade da barbearia (\"a arte do corte, o ritual do homem\"), sistema de agendamento online e contato direto via WhatsApp.",
+    "title": "Barbearia Pedrão",
+    "url": "https://barbearia-pedrao.base44.app",
+    "features": [
+      "Apresentação de serviços",
+      "Design responsivo",
+      "Identidade visual própria",
+      "Página institucional",
+      "Sistema de agendamento online"
+    ],
+    "problem": "A Barbearia Pedrão não tinha presença digital para apresentar seus serviços e facilitar o agendamento ou contato dos clientes.",
+    "solution": "Criação de um site institucional com apresentação dos serviços (corte, barba, combo, sobrancelha), sistema de agendamento online para os clientes marcarem horário sem precisar ligar, e botão de contato direto via WhatsApp.",
+    "tech_stack": [
+      "React",
+      "Tailwind CSS"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/a0f59465e_imagem_2026-09-22_000026707.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/58ced0bc8_imagem_2026-09-22_000211380.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1efd8bdcab71535fe1809",
+    "created_date": "2026-09-22T03:02:48.079000",
+    "updated_date": "2026-09-22T03:02:48.079000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_2_main.png",
+    "local_gallery": [
+      "/images/project_2_gallery_1.png",
+      "/images/project_2_gallery_2.png"
+    ]
+  },
+  {
+    "short_description": "Site institucional para loja de materiais de construção em São Caetano do Sul, com catálogo de produtos e avaliações do Google integradas.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/36b9c7be2_imagem_2026-09-21_235258424.png",
+    "description": "Site desenvolvido para a Quase Tudo, loja de materiais de construção (elétrica, hidráulica, ferramentas e tintas) em Santa Maria, São Caetano do Sul. Apresenta as seções de produtos, avaliações de clientes do Google (4,6/5 em 383 avaliações), informações de contato, endereço e horário de funcionamento, com contato direto via WhatsApp e telefone.",
+    "title": "Quase Tudo",
+    "url": "https://pixel-perfect-view-8834.lovable.app",
+    "features": [
+      "Catálogo de produtos por categoria",
+      "Avaliações de clientes (Google)",
+      "Botão de WhatsApp",
+      "Página de contato com mapa/endereço",
+      "Design responsivo"
+    ],
+    "problem": "A Quase Tudo, apesar de bem avaliada no Google, não tinha um site próprio que reunisse o catálogo de produtos, horários e formas de contato em um só lugar.",
+    "solution": "Criação de um site com páginas de produtos por seção (elétrica, hidráulica, ferramentas, tintas), exibição das avaliações de clientes, informações de localização/horário e contato direto via WhatsApp e telefone.",
+    "tech_stack": [
+      "React",
+      "TypeScript",
+      "Tailwind CSS"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/7e5ec24ff_imagem_2026-09-21_235311938.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/88bbf9758_imagem_2026-09-21_235339499.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1ede69040ef15af9552a4",
+    "created_date": "2026-09-22T02:54:30.747000",
+    "updated_date": "2026-09-22T02:54:30.748000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_3_main.png",
+    "local_gallery": [
+      "/images/project_3_gallery_1.png",
+      "/images/project_3_gallery_2.png"
+    ]
+  },
+  {
+    "short_description": "Site institucional para loja de moda familiar em São Caetano do Sul, com compra direta via WhatsApp.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/ffaba4f5f_imagem_2026-09-21_234945223.png",
+    "description": "Site desenvolvido para o Bazar Madeira, loja de roupas femininas, masculinas, infantis e para toda a família em São Caetano do Sul. Apresenta as novidades da loja com compra facilitada diretamente pelo WhatsApp.",
+    "title": "Bazar Madeira",
+    "url": "https://bazar-madeira-style.base44.app",
+    "features": [
+      "Vitrine de produtos",
+      "Botão de WhatsApp integrado",
+      "Design responsivo para todos dispositivos",
+      "Categorias por público (feminino/masculino/infantil)",
+      "Painel administrador"
+    ],
+    "problem": "O Bazar Madeira não tinha presença online, dependendo apenas do ponto físico para atrair clientes e divulgar novidades de moda.",
+    "solution": "Criação de um site institucional com vitrine das peças e categorias (feminino, masculino, infantil), com botão de compra/contato via WhatsApp para agilizar o atendimento.",
+    "tech_stack": [
+      "React",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "Vite"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/890dbe8c9_imagem_2026-09-21_235039320.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/f11af78b5_imagem_2026-09-21_235102456.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1ed3d949dbb64d37d45a9",
+    "created_date": "2026-09-22T02:51:41.715000",
+    "updated_date": "2026-09-22T02:51:41.715000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_4_main.png",
+    "local_gallery": [
+      "/images/project_4_gallery_1.png",
+      "/images/project_4_gallery_2.png"
+    ]
+  },
+  {
+    "short_description": "Site institucional para loja de variedades com perfumes, cosméticos, bolsas e calçados de marcas conhecidas.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/e4ed8c749_imagem_2026-09-21_234511134.png",
+    "description": "Site institucional desenvolvido para a Wanda Variedades, loja que comercializa perfumes, cosméticos, bolsas e calçados de marcas como Natura, Eudora, Boticário, Amakha Paris e Tupperware. O site reúne o catálogo de produtos e informações da loja em um só lugar, facilitando a descoberta pelos clientes.",
+    "title": "Wanda Variedades",
+    "url": "https://wanda-variedades.sticklight.app",
+    "features": [
+      "Catálogo de produtos",
+      "Design responsivo",
+      "Página institucional",
+      "Múltiplas marcas/categorias",
+      "Painel administrador"
+    ],
+    "problem": "A Wanda Variedades vendia produtos de diversas marcas sem um canal digital que reunisse tudo em um só lugar, dificultando que clientes soubessem a variedade de produtos disponíveis.",
+    "solution": "Criação de um site institucional apresentando o catálogo de marcas e categorias (perfumes, cosméticos, bolsas e calçados), com identidade visual própria e foco em facilitar a navegação do cliente.",
+    "tech_stack": [
+      "React",
+      "Tailwind CSS"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/dd071744a_imagem_2026-09-21_234545656.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/3c1bc78ec_imagem_2026-09-21_234653651.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1ec44e97abc4aa9da10d4",
+    "created_date": "2026-09-22T02:47:32.808000",
+    "updated_date": "2026-09-22T02:47:32.808000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_5_main.png",
+    "local_gallery": [
+      "/images/project_5_gallery_1.png",
+      "/images/project_5_gallery_2.png"
+    ]
+  },
+  {
+    "short_description": "Site institucional para oficina de elétrica automotiva em São Caetano do Sul, com foco em geração de contato via WhatsApp.",
+    "main_image": "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/d32a51dbc_imagem_2026-09-21_233852751.png",
+    "description": "Site institucional desenvolvido para a Auto Elétrico JF, especializada em serviços elétricos e diagnóstico automotivo em São Caetano do Sul. O projeto apresenta os serviços oferecidos, informações sobre a empresa e localização, com botão de contato direto via WhatsApp para agilizar orçamentos e agendamentos.",
+    "title": "Auto Elétrica JF",
+    "url": "https://auto-jf-site.lovable.app/#inicio",
+    "features": [
+      "Botão de WhatsApp",
+      "Design responsivo",
+      "Seção de serviços",
+      "Localização/mapa",
+      "Página institucional"
+    ],
+    "problem": "A Auto Elétrico JF não tinha presença digital: clientes não conseguiam encontrar os serviços, horário de funcionamento ou forma de contato pela internet, dependendo só de indicação boca a boca.",
+    "solution": "Criação de um site institucional responsivo com apresentação dos serviços (elétrica automotiva e diagnóstico), botão de contato direto via WhatsApp e localização em São Caetano do Sul, facilitando o primeiro contato do cliente.",
+    "tech_stack": [
+      "React ",
+      "TypeScript",
+      "Tailwind CSS"
+    ],
+    "category": "Sites",
+    "gallery": [
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/a738c159e_imagem_2026-09-21_233912288.png",
+      "https://base44.app/api/apps/6ab1317253d81b671ed8f711/files/mp/public/6ab1317253d81b671ed8f711/b93858171_imagem_2026-09-21_233934829.png"
+    ],
+    "is_featured": false,
+    "status": "active",
+    "id": "6ab1eb228cbf460c3452dff1",
+    "created_date": "2026-09-22T02:42:42.692000",
+    "updated_date": "2026-09-22T02:42:42.692000",
+    "created_by_id": "6ab1317653d81b671ed8f713",
+    "is_sample": false,
+    "local_main_image": "/images/project_6_main.png",
+    "local_gallery": [
+      "/images/project_6_gallery_1.png",
+      "/images/project_6_gallery_2.png"
+    ]
+  }
+]
