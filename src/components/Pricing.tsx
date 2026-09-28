@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Sparkles, ArrowRight } from 'lucide-react';
-import { plans } from '@/data/plans';
-import { siteConfig } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const Pricing: React.FC = () => {
+  const { plans, config } = useSiteData();
+
   return (
     <section className="py-20 bg-white/[0.01] border-t border-white/5 relative overflow-hidden" id="planos">
       {/* Background glow behind featured card */}
@@ -19,7 +20,7 @@ export const Pricing: React.FC = () => {
             Escolha o plano ideal para o seu momento.
           </h2>
           <p className="text-muted-foreground text-base">
-            {siteConfig.plansDisclaimer}
+            {config.plansDisclaimer}
           </p>
         </div>
 

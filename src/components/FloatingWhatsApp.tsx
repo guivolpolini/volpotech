@@ -1,12 +1,18 @@
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
-import { getWhatsAppUrl } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const FloatingWhatsApp: React.FC = () => {
+  const { config } = useSiteData();
+
+  const whatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.'
+  )}`;
+
   return (
     <aside aria-label="Atendimento rápido" className="fixed bottom-6 right-6 z-50">
       <a
-        href={getWhatsAppUrl()}
+        href={whatsAppUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="group relative flex items-center gap-3 px-4 py-3 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95"

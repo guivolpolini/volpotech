@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ProjectCard } from '@/components/ProjectCard';
 import { CtaBanner } from '@/components/CtaBanner';
-import { projects } from '@/data/projects';
+import { useSiteData } from '@/context/SiteContext';
 
 const categories = ['Todos', 'Sites', 'Lojas', 'Landing Pages', 'Sistemas', 'Outros'] as const;
 
 export const PortfolioPage: React.FC = () => {
+  const { projects } = useSiteData();
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
   const filteredProjects =

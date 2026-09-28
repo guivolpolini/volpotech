@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
-import { getWhatsAppUrl } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { config } = useSiteData();
 
   const navLinks = [
     { label: 'Início', path: '/' },
@@ -20,6 +21,10 @@ export const Navbar: React.FC = () => {
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
+
+  const whatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.'
+  )}`;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass bg-background/80 border-b border-white/10 backdrop-blur-md">
@@ -59,7 +64,7 @@ export const Navbar: React.FC = () => {
         {/* CTA Button */}
         <div className="hidden md:flex items-center gap-4">
           <a
-            href={getWhatsAppUrl()}
+            href={whatsAppUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white font-medium text-sm transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
@@ -98,7 +103,7 @@ export const Navbar: React.FC = () => {
           ))}
           <div className="pt-2">
             <a
-              href={getWhatsAppUrl()}
+              href={whatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}

@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Instagram, Mail, MapPin } from 'lucide-react';
-import { siteConfig, getWhatsAppUrl } from '@/data/siteConfig';
+import { MessageCircle, Instagram, Mail, MapPin, Lock } from 'lucide-react';
+import { useSiteData } from '@/context/SiteContext';
 
 export const Footer: React.FC = () => {
+  const { config } = useSiteData();
+
+  const whatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.'
+  )}`;
+
   return (
     <footer className="border-t border-white/10 bg-background/90 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +71,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  href={getWhatsAppUrl()}
+                  href={whatsAppUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
@@ -76,27 +82,27 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href={siteConfig.contact.instagram}
+                  href={config.contact.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
                 >
                   <Instagram className="w-4 h-4 text-pink-400" />
-                  <span>{siteConfig.contact.instagramHandle}</span>
+                  <span>{config.contact.instagramHandle}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${siteConfig.contact.email}`}
+                  href={`mailto:${config.contact.email}`}
                   className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
                 >
                   <Mail className="w-4 h-4 text-primary" />
-                  <span>{siteConfig.contact.email}</span>
+                  <span>{config.contact.email}</span>
                 </a>
               </li>
               <li className="flex items-start gap-2 text-muted-foreground pt-1">
                 <MapPin className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <span>{siteConfig.contact.region}</span>
+                <span>{config.contact.region}</span>
               </li>
             </ul>
           </div>
@@ -130,9 +136,15 @@ export const Footer: React.FC = () => {
         {/* Bottom bar */}
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
           <p>© {new Date().getFullYear()} VolpoTech. Todos os direitos reservados.</p>
-          <p className="flex items-center gap-1">
-            <span>Desenvolvido com tecnologia de alta performance</span>
-          </p>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Área administrativa</span>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

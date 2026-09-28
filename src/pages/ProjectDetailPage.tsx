@@ -9,11 +9,11 @@ import {
   ArrowRight,
   Layers,
 } from 'lucide-react';
-import { projects } from '@/data/projects';
-import { getWhatsAppUrl } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { projects, config } = useSiteData();
   const project = projects.find((p) => p.id === id || p.slug === id);
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
@@ -36,6 +36,10 @@ export const ProjectDetailPage: React.FC = () => {
   }
 
   const currentHeroImage = activeImage || project.main_image;
+
+  const projectWhatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    `Olá! Vi o projeto "${project.title}" no portfólio da VolpoTech e gostaria de um site semelhante.`
+  )}`;
 
   return (
     <div className="pt-28 pb-20 min-h-screen">
@@ -225,7 +229,7 @@ export const ProjectDetailPage: React.FC = () => {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <a
-              href={getWhatsAppUrl(`Olá! Vi o projeto "${project.title}" no portfólio da VolpoTech e gostaria de um site semelhante.`)}
+              href={projectWhatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 text-white font-medium text-sm transition-all border border-white/10"

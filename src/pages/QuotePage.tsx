@@ -7,11 +7,12 @@ import {
   MessageCircle,
   CheckCircle2,
 } from 'lucide-react';
-import { getWhatsAppUrl } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const QuotePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialPlan = searchParams.get('plano') || searchParams.get('servico') || '';
+  const { config, addLead } = useSiteData();
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -23,7 +24,7 @@ export const QuotePage: React.FC = () => {
     whatsapp: '',
     email: '',
     instagram: '',
-    city: 'São Caetano do Sul',
+    city: config.contact.city,
     businessType: '',
     hasWebsite: 'Não',
     selectedPlan: initialPlan.includes('prof')
@@ -69,6 +70,17 @@ export const QuotePage: React.FC = () => {
     } else if (currentStep === 2) {
       setCurrentStep(3);
     } else if (currentStep === 3) {
+      // Save lead to local context/storage for admin dashboard
+      addLead({
+        name: formData.name,
+        company: formData.company,
+        whatsapp: formData.whatsapp,
+        email: formData.email,
+        city: formData.city,
+        plan: formData.selectedPlan,
+        type: 'orcamento',
+        message: `Ramo: ${formData.businessType} | Prazo: ${formData.urgency} | Recursos: ${formData.features.join(', ')} | Objetivo: ${formData.goals}`,
+      });
       setSubmitted(true);
     }
   };
@@ -93,6 +105,10 @@ export const QuotePage: React.FC = () => {
 ${formData.goals || 'Gostaria de saber mais informações e iniciar o projeto.'}`;
     return text;
   };
+
+  const dynamicWhatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    generateWhatsAppMessage()
+  )}`;
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
@@ -398,7 +414,7 @@ ${formData.goals || 'Gostaria de saber mais informações e iniciar o projeto.'}
 
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
-                  href={getWhatsAppUrl(generateWhatsAppMessage())}
+                  href={dynamicWhatsAppUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white font-semibold text-sm shadow-xl shadow-emerald-500/25 transition-all hover:scale-105"

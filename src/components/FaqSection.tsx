@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { faqs } from '@/data/faq';
+import { useSiteData } from '@/context/SiteContext';
 
 export const FaqSection: React.FC = () => {
+  const { faqs } = useSiteData();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (idx: number) => {

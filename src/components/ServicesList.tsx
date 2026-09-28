@@ -13,7 +13,7 @@ import {
   Wrench,
   ArrowRight,
 } from 'lucide-react';
-import { services } from '@/data/services';
+import { useSiteData } from '@/context/SiteContext';
 
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
   RefreshCw,
@@ -32,6 +32,7 @@ export const ServicesList: React.FC<{ limit?: number; showHeader?: boolean }> = 
   limit,
   showHeader = true,
 }) => {
+  const { services } = useSiteData();
   const displayedServices = limit ? services.slice(0, limit) : services;
 
   return (

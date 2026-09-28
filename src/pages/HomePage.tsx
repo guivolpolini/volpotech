@@ -9,9 +9,10 @@ import { PlateSection } from '@/components/PlateSection';
 import { FaqSection } from '@/components/FaqSection';
 import { CtaBanner } from '@/components/CtaBanner';
 import { ProjectCard } from '@/components/ProjectCard';
-import { projects } from '@/data/projects';
+import { useSiteData } from '@/context/SiteContext';
 
 export const HomePage: React.FC = () => {
+  const { projects } = useSiteData();
   // Show first 3 projects on home
   const featuredProjects = projects.slice(0, 3);
 

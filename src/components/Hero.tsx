@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Sparkles, Smartphone, Search, MapPin } from 'lucide-react';
-import { siteConfig } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const Hero: React.FC = () => {
+  const { config } = useSiteData();
+
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
       {/* Background glow effects */}
@@ -17,21 +19,17 @@ export const Hero: React.FC = () => {
             {/* Location pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-accent">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>São Caetano do Sul — Atendendo todo o Brasil</span>
+              <span>{config.contact.region}</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-              Sua empresa mais{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-primary to-accent bg-clip-text text-transparent">
-                profissional
-              </span>{' '}
-              no digital.
+              {config.heroTitle}
             </h1>
 
             {/* Subtitle */}
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              {siteConfig.heroSubtitle}
+              {config.heroSubtitle}
             </p>
 
             {/* Value Proposition Box */}
@@ -55,14 +53,14 @@ export const Hero: React.FC = () => {
                 to="/orcamento"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-base transition-all shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
               >
-                <span>{siteConfig.heroCtaPrimary}</span>
+                <span>{config.heroCtaPrimary}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/portfolio"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-medium text-base transition-all hover:-translate-y-0.5"
               >
-                <span>{siteConfig.heroCtaSecondary}</span>
+                <span>{config.heroCtaSecondary}</span>
               </Link>
             </div>
 

@@ -7,14 +7,19 @@ import {
   Send,
   CheckCircle2,
 } from 'lucide-react';
-import { siteConfig, getWhatsAppUrl } from '@/data/siteConfig';
+import { useSiteData } from '@/context/SiteContext';
 
 export const ContactPage: React.FC = () => {
+  const { config, addLead } = useSiteData();
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+
+  const whatsAppDirectUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.'
+  )}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +37,18 @@ export const ContactPage: React.FC = () => {
 *Mensagem:*
 ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da VolpoTech.'}`;
 
+    // Save lead to local context/storage for admin dashboard
+    addLead({
+      name,
+      whatsapp,
+      email,
+      type: 'contato',
+      message,
+    });
+
     // Open WhatsApp directly
-    window.open(getWhatsAppUrl(fullMessage), '_blank');
+    const url = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(fullMessage)}`;
+    window.open(url, '_blank');
     setSent(true);
   };
 
@@ -58,7 +73,7 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
           <div className="lg:col-span-5 space-y-4">
             {/* WhatsApp */}
             <a
-              href={getWhatsAppUrl()}
+              href={whatsAppDirectUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-6 rounded-2xl glass border border-white/10 hover:border-emerald-500/40 transition-all flex items-center gap-4 group"
@@ -78,7 +93,7 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
 
             {/* Email */}
             <a
-              href={`mailto:${siteConfig.contact.email}`}
+              href={`mailto:${config.contact.email}`}
               className="p-6 rounded-2xl glass border border-white/10 hover:border-primary/40 transition-all flex items-center gap-4 group"
             >
               <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -89,14 +104,14 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                   E-mail
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {siteConfig.contact.email}
+                  {config.contact.email}
                 </p>
               </div>
             </a>
 
             {/* Instagram */}
             <a
-              href={siteConfig.contact.instagram}
+              href={config.contact.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="p-6 rounded-2xl glass border border-white/10 hover:border-pink-500/40 transition-all flex items-center gap-4 group"
@@ -109,7 +124,7 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                   Instagram
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {siteConfig.contact.instagramHandle}
+                  {config.contact.instagramHandle}
                 </p>
               </div>
             </a>
@@ -124,7 +139,7 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                   Localização
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {siteConfig.contact.city} — {siteConfig.contact.region}
+                  {config.contact.region}
                 </p>
               </div>
             </div>
