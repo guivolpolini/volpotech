@@ -24,7 +24,15 @@ export const Pricing: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div
+          className={`grid gap-8 ${
+            plans.length === 1
+              ? 'max-w-md mx-auto grid-cols-1'
+              : plans.length === 2
+              ? 'max-w-5xl mx-auto grid-cols-1 lg:grid-cols-2'
+              : 'max-w-7xl mx-auto grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}
+        >
           {plans.map((plan) => (
             <div
               key={plan.id}

@@ -32,6 +32,8 @@ interface SiteContextType {
   deleteProject: (id: string) => void;
   updateService: (id: string, service: Partial<ServiceItem>) => void;
   updatePlan: (id: string, plan: Partial<PlanItem>) => void;
+  addPlan: (plan: Omit<PlanItem, 'id'>) => void;
+  deletePlan: (id: string) => void;
   addFaq: (faq: FaqItem) => void;
   updateFaq: (index: number, faq: FaqItem) => void;
   deleteFaq: (index: number) => void;
@@ -185,6 +187,18 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
+  const addPlan = (planData: Omit<PlanItem, 'id'>) => {
+    const newPlan: PlanItem = {
+      ...planData,
+      id: 'plan_' + Date.now().toString(36),
+    };
+    setPlans((prev) => [...prev, newPlan]);
+  };
+
+  const deletePlan = (id: string) => {
+    setPlans((prev) => prev.filter((p) => p.id !== id));
+  };
+
   const addFaq = (faq: FaqItem) => {
     setFaqs((prev) => [...prev, faq]);
   };
@@ -277,6 +291,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteProject,
         updateService,
         updatePlan,
+        addPlan,
+        deletePlan,
         addFaq,
         updateFaq,
         deleteFaq,

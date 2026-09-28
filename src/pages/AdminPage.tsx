@@ -37,6 +37,8 @@ export const AdminPage: React.FC = () => {
     deleteProject,
     updateService,
     updatePlan,
+    addPlan,
+    deletePlan,
     addFaq,
     updateFaq,
     deleteFaq,
@@ -98,6 +100,23 @@ export const AdminPage: React.FC = () => {
   const [editingFaqIndex, setEditingFaqIndex] = useState<number | null>(null);
   const [faqForm, setFaqForm] = useState({ question: '', answer: '' });
   const [isCreatingFaq, setIsCreatingFaq] = useState(false);
+
+  // Plan Modal / Create State
+  const [isCreatingPlan, setIsCreatingPlan] = useState(false);
+  const [planForm, setPlanForm] = useState({
+    name: '',
+    price: 99.9,
+    description: '',
+    featured: false,
+    features: [
+      'Site personalizado e exclusivo',
+      'Design responsivo',
+      'Botões de WhatsApp e redes sociais',
+      'Hospedagem rápida e SSL inclusos',
+      'Manutenção técnica contínua',
+      'Suporte prioritário',
+    ],
+  });
 
   // Authentication Handler
   const handleLogin = (e: React.FormEvent) => {
@@ -883,28 +902,67 @@ export const AdminPage: React.FC = () => {
 
         {/* TAB 4: PLANS */}
         {activeTab === 'plans' && (
-          <div className="space-y-6 max-w-4xl">
-            <div>
-              <h2 className="text-xl font-heading font-bold text-white">
-                Planos e Preços
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Altere os preços das mensalidades e a lista de benefícios de cada plano.
-              </p>
+          <div className="space-y-6 max-w-5xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-heading font-bold text-white">
+                  Planos e Preços ({plans.length})
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Altere os preços das mensalidades, adicione novos planos ou exclua planos existentes.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setPlanForm({
+                    name: '',
+                    price: 99.9,
+                    description: '',
+                    featured: false,
+                    features: [
+                      'Site personalizado e exclusivo',
+                      'Design 100% responsivo (celular e PC)',
+                      'Botões de WhatsApp e Instagram',
+                      'Hospedagem rápida, SSL e domínio inclusos',
+                      'Manutenção técnica contínua',
+                      'Suporte prioritário',
+                    ],
+                  });
+                  setIsCreatingPlan(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-lg shadow-primary/25 transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Novo Plano</span>
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className="p-6 rounded-2xl glass border border-white/10 space-y-4"
+                  className={`p-6 rounded-2xl glass border space-y-4 flex flex-col justify-between transition-all ${
+                    plan.featured ? 'border-primary/50 shadow-xl shadow-primary/10' : 'border-white/10'
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading font-bold text-lg text-white">
-                      Plano {plan.name}
-                    </h3>
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-[11px] text-muted-foreground">Preço (R$):</label>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <input
+                        type="text"
+                        value={plan.name}
+                        onChange={(e) => updatePlan(plan.id, { name: e.target.value })}
+                        placeholder="Nome do plano"
+                        className="font-heading font-bold text-lg text-white bg-transparent border-b border-white/10 focus:border-primary outline-none pb-0.5 w-full"
+                      />
+                      {plan.featured && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white shrink-0">
+                          Destaque
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs text-muted-foreground font-medium">Preço (R$/mês):</label>
                       <input
                         type="number"
                         step="0.10"
@@ -912,50 +970,199 @@ export const AdminPage: React.FC = () => {
                         onChange={(e) =>
                           updatePlan(plan.id, { price: parseFloat(e.target.value) || 0 })
                         }
-                        className="w-24 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-sm outline-none"
+                        className="w-28 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:border-primary"
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-[11px] text-muted-foreground mb-1">
-                      Descrição do plano:
+                    <div>
+                      <label className="block text-[11px] text-muted-foreground mb-1">
+                        Descrição do plano:
+                      </label>
+                      <input
+                        type="text"
+                        value={plan.description}
+                        onChange={(e) =>
+                          updatePlan(plan.id, { description: e.target.value })
+                        }
+                        className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-muted-foreground mb-1">
+                        Recursos inclusos (um por linha):
+                      </label>
+                      <textarea
+                        rows={6}
+                        value={plan.features.join('\n')}
+                        onChange={(e) =>
+                          updatePlan(plan.id, {
+                            features: e.target.value.split('\n').filter(Boolean),
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none font-mono focus:border-primary"
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={plan.featured}
+                        onChange={(e) => updatePlan(plan.id, { featured: e.target.checked })}
+                        className="rounded border-white/20 text-primary focus:ring-0 w-4 h-4"
+                      />
+                      <span>Marcar como "Mais Escolhido"</span>
                     </label>
-                    <input
-                      type="text"
-                      value={plan.description}
-                      onChange={(e) =>
-                        updatePlan(plan.id, { description: e.target.value })
-                      }
-                      className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none"
-                    />
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] text-muted-foreground mb-1">
-                      Recursos inclusos (um por linha):
-                    </label>
-                    <textarea
-                      rows={6}
-                      value={plan.features.join('\n')}
-                      onChange={(e) =>
-                        updatePlan(plan.id, {
-                          features: e.target.value.split('\n').filter(Boolean),
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none font-mono"
-                    />
-                  </div>
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2">
+                    <button
+                      onClick={() => showToast(`Plano "${plan.name}" salvo com sucesso!`)}
+                      className="flex-1 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-md shadow-primary/20 transition-all"
+                    >
+                      Salvar Plano
+                    </button>
 
-                  <button
-                    onClick={() => showToast(`Plano ${plan.name} salvo com sucesso!`)}
-                    className="w-full py-2 rounded-xl bg-primary text-white text-xs font-semibold"
-                  >
-                    Salvar Plano {plan.name}
-                  </button>
+                    <button
+                      onClick={() => {
+                        if (plans.length <= 1) {
+                          alert('O site deve ter pelo menos 1 plano cadastrado.');
+                          return;
+                        }
+                        if (confirm(`Tem certeza que deseja excluir o plano "${plan.name}"?`)) {
+                          deletePlan(plan.id);
+                          showToast(`Plano "${plan.name}" excluído.`);
+                        }
+                      }}
+                      className="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10 border border-white/5 transition-colors"
+                      title="Excluir este plano"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
+
+            {/* Modal for Creating New Plan */}
+            {isCreatingPlan && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md">
+                <div className="w-full max-w-lg bg-card border border-white/15 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <h3 className="text-lg font-heading font-bold text-white">
+                      Adicionar Novo Plano
+                    </h3>
+                    <button
+                      onClick={() => setIsCreatingPlan(false)}
+                      className="text-muted-foreground hover:text-white text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Nome do Plano *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={planForm.name}
+                          onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
+                          placeholder="Ex: Corporativo / Personalizado"
+                          className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Preço da Mensalidade (R$) *
+                        </label>
+                        <input
+                          type="number"
+                          step="0.10"
+                          required
+                          value={planForm.price}
+                          onChange={(e) =>
+                            setPlanForm({ ...planForm, price: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Descrição do Plano
+                      </label>
+                      <input
+                        type="text"
+                        value={planForm.description}
+                        onChange={(e) =>
+                          setPlanForm({ ...planForm, description: e.target.value })
+                        }
+                        placeholder="Ex: Ideal para empresas com grande fluxo de vendas..."
+                        className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Recursos Inclusos (um item por linha)
+                      </label>
+                      <textarea
+                        rows={6}
+                        value={planForm.features.join('\n')}
+                        onChange={(e) =>
+                          setPlanForm({
+                            ...planForm,
+                            features: e.target.value.split('\n').filter(Boolean),
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs outline-none focus:border-primary font-mono"
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={planForm.featured}
+                        onChange={(e) => setPlanForm({ ...planForm, featured: e.target.checked })}
+                        className="rounded border-white/20 text-primary focus:ring-0 w-4 h-4"
+                      />
+                      <span>Destacar como "Mais Escolhido" na página inicial</span>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setIsCreatingPlan(false)}
+                      className="px-4 py-2 rounded-xl bg-white/5 text-white text-xs font-medium"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!planForm.name.trim()) {
+                          alert('Por favor, informe o nome do plano.');
+                          return;
+                        }
+                        addPlan(planForm);
+                        showToast(`Plano "${planForm.name}" adicionado com sucesso!`);
+                        setIsCreatingPlan(false);
+                      }}
+                      className="px-5 py-2 rounded-xl bg-primary text-white text-xs font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
+                    >
+                      Criar Plano
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
