@@ -106,6 +106,7 @@ export const AdminPage: React.FC = () => {
   const [planForm, setPlanForm] = useState({
     name: '',
     price: 99.9,
+    setupPrice: 0,
     description: '',
     featured: false,
     features: [
@@ -917,6 +918,7 @@ export const AdminPage: React.FC = () => {
                   setPlanForm({
                     name: '',
                     price: 99.9,
+                    setupPrice: 0,
                     description: '',
                     featured: false,
                     features: [
@@ -961,17 +963,38 @@ export const AdminPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs text-muted-foreground font-medium">Preço (R$/mês):</label>
-                      <input
-                        type="number"
-                        step="0.10"
-                        value={plan.price}
-                        onChange={(e) =>
-                          updatePlan(plan.id, { price: parseFloat(e.target.value) || 0 })
-                        }
-                        className="w-28 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:border-primary"
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] text-muted-foreground font-medium block mb-1">
+                          Criação (R$):
+                        </label>
+                        <input
+                          type="number"
+                          step="1"
+                          value={plan.setupPrice ?? 0}
+                          onChange={(e) =>
+                            updatePlan(plan.id, { setupPrice: parseFloat(e.target.value) || 0 })
+                          }
+                          placeholder="0 = grátis"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:border-primary"
+                        />
+                        <span className="text-[10px] text-muted-foreground">0 = taxa grátis</span>
+                      </div>
+                      <div>
+                        <label className="text-[11px] text-muted-foreground font-medium block mb-1">
+                          Mensalidade (R$):
+                        </label>
+                        <input
+                          type="number"
+                          step="0.10"
+                          value={plan.price}
+                          onChange={(e) =>
+                            updatePlan(plan.id, { price: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-sm outline-none focus:border-primary"
+                        />
+                        <span className="text-[10px] text-muted-foreground">/mês</span>
+                      </div>
                     </div>
 
                     <div>
@@ -1061,24 +1084,41 @@ export const AdminPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Nome do Plano *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={planForm.name}
+                        onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
+                        placeholder="Ex: Corporativo / Personalizado"
+                        className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                      />
+                    </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-semibold text-gray-300 mb-1">
-                          Nome do Plano *
+                          Taxa de Criação / Setup (R$)
                         </label>
                         <input
-                          type="text"
-                          required
-                          value={planForm.name}
-                          onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
-                          placeholder="Ex: Corporativo / Personalizado"
-                          className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                          type="number"
+                          step="1"
+                          value={planForm.setupPrice}
+                          onChange={(e) =>
+                            setPlanForm({ ...planForm, setupPrice: parseFloat(e.target.value) || 0 })
+                          }
+                          placeholder="0 = grátis"
+                          className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary font-bold"
                         />
+                        <span className="text-[10px] text-muted-foreground">Deixe 0 para taxa grátis.</span>
                       </div>
 
                       <div>
                         <label className="block text-xs font-semibold text-gray-300 mb-1">
-                          Preço da Mensalidade (R$) *
+                          Mensalidade (R$/mês) *
                         </label>
                         <input
                           type="number"

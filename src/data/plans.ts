@@ -1,7 +1,8 @@
 export interface PlanItem {
   id: string;
   name: string;
-  price: number;
+  price: number; // mensalidade (R$/mês)
+  setupPrice?: number; // taxa de criação/adesão única (R$)
   description: string;
   featured: boolean;
   features: string[];
@@ -13,6 +14,7 @@ export const plans: PlanItem[] = [
     id: 'essencial',
     name: 'Essencial',
     price: 69.9,
+    setupPrice: 0,
     description: 'Ideal para começar com presença profissional.',
     featured: false,
     features: [
@@ -32,6 +34,7 @@ export const plans: PlanItem[] = [
     id: 'profissional',
     name: 'Profissional',
     price: 89.9,
+    setupPrice: 0,
     description: 'Para quem quer vender e se destacar mais na internet.',
     featured: true,
     features: [

@@ -59,12 +59,41 @@ export const Pricing: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-baseline gap-2 mb-8 pb-6 border-b border-white/10">
-                  <span className="text-sm text-muted-foreground font-medium">R$</span>
-                  <span className="text-5xl font-heading font-extrabold text-white tracking-tight">
-                    {plan.price.toFixed(2).replace('.', ',')}
-                  </span>
-                  <span className="text-sm text-muted-foreground">/mês</span>
+                <div className="mb-8 pb-6 border-b border-white/10">
+                  {plan.setupPrice !== undefined && plan.setupPrice > 0 ? (
+                    <div className="space-y-1">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                          Criação:
+                        </span>
+                        <span className="text-2xl font-heading font-extrabold text-white">
+                          R$ {plan.setupPrice.toFixed(2).replace('.', ',')}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline gap-1.5 pt-0.5">
+                        <span className="text-xs text-accent font-semibold uppercase tracking-wider">
+                          + Mensalidade:
+                        </span>
+                        <span className="text-4xl font-heading font-extrabold text-white tracking-tight">
+                          R$ {plan.price.toFixed(2).replace('.', ',')}
+                        </span>
+                        <span className="text-xs text-muted-foreground">/mês</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-sm text-muted-foreground font-medium">R$</span>
+                        <span className="text-5xl font-heading font-extrabold text-white tracking-tight">
+                          {plan.price.toFixed(2).replace('.', ',')}
+                        </span>
+                        <span className="text-sm text-muted-foreground">/mês</span>
+                      </div>
+                      <p className="text-xs text-emerald-400 font-medium mt-1.5 flex items-center gap-1">
+                        <span>✓ Sem taxa de criação (R$ 0)</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-3.5 mb-8">
