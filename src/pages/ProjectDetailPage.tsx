@@ -218,7 +218,7 @@ export const ProjectDetailPage: React.FC = () => {
             Podemos criar uma presença digital semelhante para o seu negócio.
           </h3>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-            Sem taxa de criação, entrega rápida e mensalidade acessível a partir de R$ 69,90/mês.
+            Design moderno, entrega rápida, suporte contínuo e proposta sob medida para o seu negócio.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
             <Link

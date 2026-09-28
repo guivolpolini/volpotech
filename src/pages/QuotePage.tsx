@@ -28,10 +28,10 @@ export const QuotePage: React.FC = () => {
     businessType: '',
     hasWebsite: 'Não',
     selectedPlan: initialPlan.includes('prof')
-      ? 'Profissional (R$ 89,90/mês)'
+      ? 'Plano Profissional'
       : initialPlan.includes('placa')
       ? 'Placa Google de Avaliações'
-      : 'Essencial (R$ 69,90/mês)',
+      : 'Plano Essencial',
     urgency: 'Nas próximas 2 semanas',
     features: [] as string[],
     goals: '',
@@ -281,11 +281,11 @@ ${formData.goals || 'Gostaria de saber mais informações e iniciar o projeto.'}
                         onChange={(e) => handleTextChange('selectedPlan', e.target.value)}
                         className="w-full px-4 py-3 rounded-xl bg-card border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
                       >
-                        <option value="Essencial (R$ 69,90/mês)">Essencial (R$ 69,90/mês)</option>
-                        <option value="Profissional (R$ 89,90/mês)">Profissional (R$ 89,90/mês)</option>
+                        <option value="Plano Essencial">Plano Essencial</option>
+                        <option value="Plano Profissional">Plano Profissional</option>
                         <option value="Placa Google de Avaliações">Placa Google de Avaliações</option>
-                        <option value="Landing Page pontual">Landing Page pontual</option>
-                        <option value="Projeto Personalizado">Projeto Personalizado</option>
+                        <option value="Landing Page">Landing Page</option>
+                        <option value="Projeto Sob Medida">Projeto Sob Medida</option>
                       </select>
                     </div>
 

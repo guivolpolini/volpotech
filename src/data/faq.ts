@@ -7,7 +7,7 @@ export const faqs: FaqItem[] = [
   {
     question: 'Existe alguma taxa inicial ou custo de criação?',
     answer:
-      'Não! Você não paga nenhuma taxa de criação nem adesão inicial. Você paga apenas o valor da mensalidade do plano escolhido (a partir de R$ 69,90/mês).',
+      'Trabalhamos com condições flexíveis e modelos por assinatura ou sob medida. Entre em contato para alinharmos a melhor opção para o seu momento.',
   },
   {
     question: 'Em quanto tempo meu site fica pronto?',
