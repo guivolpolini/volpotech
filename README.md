@@ -4,7 +4,6 @@ Site completo e 100% independente da **VolpoTech**
 
 ## 🚀 Destaques do Projeto
 
-- **Zero dependência externa:** Todos os scripts do Base44, tokens, badges e chamadas de API foram removidos.
 - **Assets 100% locais:** Todas as 23 imagens (hero, placa Google, logos e capturas de tela do portfólio) foram baixadas e ficam na pasta local `public/images/`.
 - **Stack moderna e ultrarrápida:** Vite + React + TypeScript + Tailwind CSS + Lucide Icons + React Router.
 - **Design de alta fidelidade:** Modo escuro nativo (#07070a), tipografia Sora & Inter, efeitos glassmorphism e microinterações.
