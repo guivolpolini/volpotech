@@ -1,6 +1,6 @@
 # VolpoTech — Site Institucional e Plataforma
 
-Site completo e 100% independente da **VolpoTech**, reconstruído sem qualquer dependência ou vínculo com o Base44.
+Site completo e 100% independente da **VolpoTech**
 
 ## 🚀 Destaques do Projeto
 
