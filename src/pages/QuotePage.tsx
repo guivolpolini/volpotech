@@ -16,8 +16,10 @@ import {
   Sparkles,
   Layers,
   Tag,
+  AlertCircle,
 } from 'lucide-react';
 import { useSiteData, BriefingData } from '@/context/SiteContext';
+import { maskPhone, isValidPhone, isValidEmail, maskInstagram } from '@/utils/masks';
 
 const AVAILABLE_PAGES = [
   'Início / Home (com destaques e chamada para ação)',
@@ -96,9 +98,13 @@ export const QuotePage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const updateField = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
   };
 
   const togglePage = (page: string) => {
@@ -111,6 +117,9 @@ export const QuotePage: React.FC = () => {
           : [...prev.pagesNeeded, page],
       };
     });
+    if (errors.pagesNeeded) {
+      setErrors((prev) => ({ ...prev, pagesNeeded: '' }));
+    }
   };
 
   const toggleFeature = (feat: string) => {
@@ -126,41 +135,44 @@ export const QuotePage: React.FC = () => {
   };
 
   const validateStep = (step: number): boolean => {
+    const errs: { [key: string]: string } = {};
+
     if (step === 1) {
-      if (!formData.contactName.trim()) {
-        alert('Por favor, informe seu nome completo.');
-        return false;
+      if (!formData.contactName.trim() || formData.contactName.trim().length < 3) {
+        errs.contactName = 'Por favor, informe seu nome completo (mínimo 3 letras).';
       }
-      if (!formData.companyName.trim()) {
-        alert('Por favor, informe o nome da sua empresa ou negócio.');
-        return false;
+      if (!formData.companyName.trim() || formData.companyName.trim().length < 2) {
+        errs.companyName = 'Por favor, informe o nome da sua empresa ou negócio.';
       }
       if (!formData.whatsapp.trim()) {
-        alert('Por favor, informe seu WhatsApp para enviarmos a proposta.');
-        return false;
+        errs.whatsapp = 'Por favor, informe seu WhatsApp com DDD.';
+      } else if (!isValidPhone(formData.whatsapp)) {
+        errs.whatsapp = 'WhatsApp inválido. Digite DDD + 9 dígitos, ex: (11) 98765-4321.';
       }
       if (!formData.email.trim()) {
-        alert('Por favor, informe seu e-mail.');
-        return false;
+        errs.email = 'Por favor, informe seu e-mail para envio da proposta.';
+      } else if (!isValidEmail(formData.email)) {
+        errs.email = 'E-mail inválido. Digite um e-mail válido (ex: nome@dominio.com).';
       }
     }
+
     if (step === 2) {
-      if (!formData.businessSegment.trim()) {
-        alert('Por favor, informe o ramo de atuação da empresa.');
-        return false;
+      if (!formData.businessSegment.trim() || formData.businessSegment.trim().length < 2) {
+        errs.businessSegment = 'Por favor, informe o ramo de atuação da empresa.';
       }
-      if (!formData.businessSummary.trim()) {
-        alert('Por favor, resuma os principais serviços ou produtos oferecidos.');
-        return false;
+      if (!formData.businessSummary.trim() || formData.businessSummary.trim().length < 10) {
+        errs.businessSummary = 'Por favor, descreva o que sua empresa oferece (mínimo 10 letras).';
       }
     }
+
     if (step === 3) {
       if (formData.pagesNeeded.length === 0) {
-        alert('Selecione pelo menos 1 página para o site.');
-        return false;
+        errs.pagesNeeded = 'Selecione pelo menos 1 página para o site.';
       }
     }
-    return true;
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const nextStep = () => {
@@ -463,8 +475,16 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                         value={formData.contactName}
                         onChange={(e) => updateField('contactName', e.target.value)}
                         placeholder="Ex: Guilherme Silva"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm ${
+                          errors.contactName ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.contactName && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.contactName}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -477,8 +497,16 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                         value={formData.companyName}
                         onChange={(e) => updateField('companyName', e.target.value)}
                         placeholder="Ex: Barbearia Vip / Clínica Sorriso"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm ${
+                          errors.companyName ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.companyName && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.companyName}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -488,11 +516,20 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                       <input
                         type="tel"
                         required
+                        maxLength={15}
                         value={formData.whatsapp}
-                        onChange={(e) => updateField('whatsapp', e.target.value)}
-                        placeholder="Ex: (11) 98765-4321"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                        onChange={(e) => updateField('whatsapp', maskPhone(e.target.value))}
+                        placeholder="(11) 98765-4321"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm ${
+                          errors.whatsapp ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.whatsapp && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.whatsapp}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -505,8 +542,16 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                         value={formData.email}
                         onChange={(e) => updateField('email', e.target.value)}
                         placeholder="Ex: contato@empresa.com.br"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm ${
+                          errors.email ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.email && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.email}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -529,7 +574,7 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                       <input
                         type="text"
                         value={formData.instagram}
-                        onChange={(e) => updateField('instagram', e.target.value)}
+                        onChange={(e) => updateField('instagram', maskInstagram(e.target.value))}
                         placeholder="Ex: @suaempresa"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
@@ -562,8 +607,16 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                         value={formData.businessSegment}
                         onChange={(e) => updateField('businessSegment', e.target.value)}
                         placeholder="Ex: Advocacia, Consultório, Loja de Roupas, Construtora..."
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm ${
+                          errors.businessSegment ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.businessSegment && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.businessSegment}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -576,8 +629,16 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
                         value={formData.businessSummary}
                         onChange={(e) => updateField('businessSummary', e.target.value)}
                         placeholder="Descreva resumidamente os serviços mais importantes que você deseja destacar..."
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.03] border text-white placeholder:text-muted-foreground outline-none transition-colors text-sm resize-none ${
+                          errors.businessSummary ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary'
+                        }`}
                       />
+                      {errors.businessSummary && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.businessSummary}</span>
+                        </p>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -700,9 +761,17 @@ ${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
 
                   {/* Páginas do Site */}
                   <div className="space-y-2.5">
-                    <label className="block text-xs font-semibold text-white">
-                      Quais seções ou páginas você gostaria no site? (Selecione as que deseja):
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-white">
+                        Quais seções ou páginas você gostaria no site? (Selecione as que deseja):
+                      </label>
+                      {errors.pagesNeeded && (
+                        <p className="text-xs text-rose-400 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.pagesNeeded}</span>
+                        </p>
+                      )}
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {AVAILABLE_PAGES.map((page) => {
                         const isChecked = formData.pagesNeeded.includes(page);

@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useSiteData, LeadItem } from '@/context/SiteContext';
 import { ProjectItem } from '@/data/projects';
+import { cleanDigits, isValidEmail } from '@/utils/masks';
 
 export const AdminPage: React.FC = () => {
   const {
@@ -85,6 +86,10 @@ export const AdminPage: React.FC = () => {
 
   const handleSaveGeneralConfig = (e: React.FormEvent) => {
     e.preventDefault();
+    if (localConfig.contact.email && !isValidEmail(localConfig.contact.email)) {
+      alert('Por favor, informe um e-mail comercial válido.');
+      return;
+    }
     updateConfig(localConfig);
     showToast('Configurações salvas com sucesso!');
   };
@@ -625,7 +630,7 @@ export const AdminPage: React.FC = () => {
                     onChange={(e) =>
                       setLocalConfig({
                         ...localConfig,
-                        contact: { ...localConfig.contact, whatsapp: e.target.value },
+                        contact: { ...localConfig.contact, whatsapp: cleanDigits(e.target.value).slice(0, 13) },
                       })
                     }
                     placeholder="Ex: 5511999999999"
@@ -646,10 +651,10 @@ export const AdminPage: React.FC = () => {
                     onChange={(e) =>
                       setLocalConfig({
                         ...localConfig,
-                        contact: { ...localConfig.contact, email: e.target.value },
+                        contact: { ...localConfig.contact, email: e.target.value.trim() },
                       })
                     }
-                    placeholder="contato@volpotech.com.br"
+                    placeholder="volpootech@gmail.com"
                     className="w-full px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm focus:border-primary outline-none"
                   />
                 </div>

@@ -6,8 +6,10 @@ import {
   MapPin,
   Send,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { useSiteData } from '@/context/SiteContext';
+import { maskPhone, isValidPhone, isValidEmail } from '@/utils/masks';
 
 export const ContactPage: React.FC = () => {
   const { config, addLead } = useSiteData();
@@ -16,17 +18,40 @@ export const ContactPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const whatsAppDirectUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
     'Olá! Vim pelo site da VolpoTech e quero saber mais sobre criação de sites.'
   )}`;
 
+  const validate = (): boolean => {
+    const errs: { [key: string]: string } = {};
+
+    if (!name.trim() || name.trim().length < 3) {
+      errs.name = 'Por favor, informe seu nome completo (mínimo 3 letras).';
+    }
+
+    if (!whatsapp.trim()) {
+      errs.whatsapp = 'Por favor, informe seu WhatsApp com DDD.';
+    } else if (!isValidPhone(whatsapp)) {
+      errs.whatsapp = 'WhatsApp inválido. Digite DDD + 9 dígitos, ex: (11) 98765-4321.';
+    }
+
+    if (email.trim() && !isValidEmail(email)) {
+      errs.email = 'E-mail inválido. Digite um e-mail no formato nome@dominio.com.';
+    }
+
+    if (!message.trim() || message.trim().length < 5) {
+      errs.message = 'Por favor, descreva em poucas palavras o que sua empresa precisa.';
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !whatsapp.trim()) {
-      alert('Por favor, informe seu nome e WhatsApp.');
-      return;
-    }
+    if (!validate()) return;
 
     const fullMessage = `*Mensagem de Contato - VolpoTech*
 ---------------------------------------
@@ -35,9 +60,28 @@ export const ContactPage: React.FC = () => {
 *E-mail:* ${email || 'Não informado'}
 
 *Mensagem:*
-${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da VolpoTech.'}`;
+${message}`;
 
-    // Save lead to local context/storage for admin dashboard
+    // Disparar e-mail em segundo plano para volpootech@gmail.com
+    fetch('https://formsubmit.co/ajax/volpootech@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        _subject: `💬 Novo Contato do Site: ${name}`,
+        _replyto: email || undefined,
+        _template: 'table',
+        _captcha: 'false',
+        'Nome': name,
+        'WhatsApp': whatsapp,
+        'E-mail': email || 'Não informado',
+        'Mensagem': message,
+      }),
+    }).catch((err) => console.warn(err));
+
+    // Salvar lead no painel administrativo
     addLead({
       name,
       whatsapp,
@@ -46,7 +90,7 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
       message,
     });
 
-    // Open WhatsApp directly
+    // Abrir WhatsApp diretamente
     const url = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(fullMessage)}`;
     window.open(url, '_blank');
     setSent(true);
@@ -183,25 +227,48 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                       type="text"
                       required
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+                      }}
                       placeholder="Seu nome"
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                      className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border text-white placeholder-muted-foreground outline-none transition-colors text-sm ${
+                        errors.name ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary focus:ring-1 focus:ring-primary'
+                      }`}
                     />
+                    {errors.name && (
+                      <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{errors.name}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        WhatsApp *
+                        WhatsApp (com DDD) *
                       </label>
                       <input
                         type="tel"
                         required
+                        maxLength={15}
                         value={whatsapp}
-                        onChange={(e) => setWhatsapp(e.target.value)}
+                        onChange={(e) => {
+                          setWhatsapp(maskPhone(e.target.value));
+                          if (errors.whatsapp) setErrors((prev) => ({ ...prev, whatsapp: '' }));
+                        }}
                         placeholder="(11) 99999-9999"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border text-white placeholder-muted-foreground outline-none transition-colors text-sm ${
+                          errors.whatsapp ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary focus:ring-1 focus:ring-primary'
+                        }`}
                       />
+                      {errors.whatsapp && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.whatsapp}</span>
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
@@ -210,10 +277,21 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                       <input
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                        }}
                         placeholder="voce@email.com"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border text-white placeholder-muted-foreground outline-none transition-colors text-sm ${
+                          errors.email ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary focus:ring-1 focus:ring-primary'
+                        }`}
                       />
+                      {errors.email && (
+                        <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5" />
+                          <span>{errors.email}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -225,10 +303,21 @@ ${message || 'Olá, gostaria de saber mais sobre os sites por assinatura da Volp
                       required
                       rows={4}
                       value={message}
-                      onChange={(e) => setMessage(e.target.value)}
+                      onChange={(e) => {
+                        setMessage(e.target.value);
+                        if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+                      }}
                       placeholder="Conte um pouco sobre o que sua empresa precisa (site novo, reformulação, catálogo, agendamento, etc.)..."
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                      className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border text-white placeholder-muted-foreground outline-none transition-colors text-sm ${
+                        errors.message ? 'border-rose-500 ring-1 ring-rose-500' : 'border-white/10 focus:border-primary focus:ring-1 focus:ring-primary'
+                      }`}
                     />
+                    {errors.message && (
+                      <p className="text-xs text-rose-400 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{errors.message}</span>
+                      </p>
+                    )}
                   </div>
 
                   <button
