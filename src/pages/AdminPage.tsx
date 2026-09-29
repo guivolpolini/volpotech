@@ -138,13 +138,12 @@ export const AdminPage: React.FC = () => {
   // Authentication Handler
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Default admin password is 'admin123'
-    if (passwordInput === 'admin123' || passwordInput === 'volpotech2026') {
+    if (passwordInput === 'Tobinho01!') {
       setIsAuthenticated(true);
       sessionStorage.setItem('volpotech_admin_auth', 'true');
       setAuthError('');
     } else {
-      setAuthError('Senha incorreta. (Dica padrão: admin123)');
+      setAuthError('Senha incorreta.');
     }
   };
 
