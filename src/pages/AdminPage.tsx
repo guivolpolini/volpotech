@@ -35,7 +35,9 @@ export const AdminPage: React.FC = () => {
     addProject,
     updateProject,
     deleteProject,
+    addService,
     updateService,
+    deleteService,
     updatePlan,
     addPlan,
     deletePlan,
@@ -119,6 +121,18 @@ export const AdminPage: React.FC = () => {
       'Manutenção técnica contínua',
       'Suporte prioritário',
     ],
+  });
+
+  // Service Modal / Create State
+  const [isCreatingService, setIsCreatingService] = useState(false);
+  const [serviceForm, setServiceForm] = useState({
+    name: '',
+    description: '',
+    icon: 'Layout',
+    order: 0,
+    badge: '',
+    highlight: false,
+    benefits: [] as string[],
   });
 
   // Authentication Handler
@@ -1266,58 +1280,269 @@ export const AdminPage: React.FC = () => {
         {/* TAB 5: SERVICES */}
         {activeTab === 'services' && (
           <div className="space-y-6 max-w-4xl">
-            <div>
-              <h2 className="text-xl font-heading font-bold text-white">
-                Serviços ({services.length})
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Edite os nomes e descrições dos serviços oferecidos no site.
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-heading font-bold text-white">
+                  Serviços ({services.length})
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Edite, adicione ou exclua serviços. As alterações refletem imediatamente na página de Serviços e na Home.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setServiceForm({
+                    name: '',
+                    description: '',
+                    icon: 'Layout',
+                    order: services.length,
+                    badge: '',
+                    highlight: false,
+                    benefits: [],
+                  });
+                  setIsCreatingService(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-lg shadow-primary/25 transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Novo Serviço</span>
+              </button>
             </div>
 
             <div className="space-y-4">
               {services.map((srv) => (
                 <div
                   key={srv.id}
-                  className="p-5 rounded-2xl glass border border-white/10 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center"
+                  className="p-5 rounded-2xl glass border border-white/10 space-y-4 transition-all"
                 >
-                  <div className="sm:col-span-4">
-                    <label className="block text-[10px] text-muted-foreground uppercase font-bold mb-1">
-                      Nome do Serviço
-                    </label>
-                    <input
-                      type="text"
-                      value={srv.name}
-                      onChange={(e) => updateService(srv.id, { name: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-semibold outline-none"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+                    <div className="sm:col-span-4 space-y-1">
+                      <label className="block text-[10px] text-muted-foreground uppercase font-bold">
+                        Nome do Serviço
+                      </label>
+                      <input
+                        type="text"
+                        value={srv.name}
+                        onChange={(e) => updateService(srv.id, { name: e.target.value })}
+                        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm font-semibold outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-8 space-y-1">
+                      <label className="block text-[10px] text-muted-foreground uppercase font-bold">
+                        Descrição
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={srv.description}
+                        onChange={(e) => updateService(srv.id, { description: e.target.value })}
+                        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-primary"
+                      />
+                    </div>
                   </div>
 
-                  <div className="sm:col-span-8">
-                    <label className="block text-[10px] text-muted-foreground uppercase font-bold mb-1">
-                      Descrição
-                    </label>
-                    <input
-                      type="text"
-                      value={srv.description}
-                      onChange={(e) =>
-                        updateService(srv.id, { description: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none"
-                    />
+                  {/* Highlights options: badge and benefits */}
+                  <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer text-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={!!srv.highlight}
+                          onChange={(e) => updateService(srv.id, { highlight: e.target.checked })}
+                          className="rounded border-white/20 text-primary focus:ring-0 w-3.5 h-3.5"
+                        />
+                        <span>Destacar no topo de /servicos</span>
+                      </label>
+
+                      {srv.highlight && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted-foreground uppercase font-bold">Selo:</span>
+                          <input
+                            type="text"
+                            value={srv.badge || ''}
+                            placeholder="Ex: Modelo Principal"
+                            onChange={(e) => updateService(srv.id, { badge: e.target.value })}
+                            className="px-2 py-1 rounded bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-primary"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => showToast(`Serviço "${srv.name}" salvo com sucesso!`)}
+                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-medium transition-all"
+                      >
+                        Salvar
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (services.length <= 1) {
+                            alert('Você deve manter pelo menos 1 serviço cadastrado.');
+                            return;
+                          }
+                          if (confirm(`Tem certeza que deseja excluir o serviço "${srv.name}"?`)) {
+                            deleteService(srv.id);
+                            showToast(`Serviço "${srv.name}" excluído.`);
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 border border-white/5 transition-colors"
+                        title="Excluir este serviço"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
+
+                  {srv.highlight && (
+                    <div className="pt-2 border-t border-white/5">
+                      <label className="block text-[10px] text-muted-foreground uppercase font-bold mb-1">
+                        Diferenciais / Benefícios inclusos (um por linha):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={(srv.benefits || []).join('\n')}
+                        onChange={(e) =>
+                          updateService(srv.id, {
+                            benefits: e.target.value.split('\n').filter(Boolean),
+                          })
+                        }
+                        placeholder="Item 1&#10;Item 2&#10;Item 3"
+                        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs outline-none focus:border-primary font-mono"
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
 
-            <div className="pt-2">
-              <button
-                onClick={() => showToast('Todos os serviços foram atualizados com sucesso!')}
-                className="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold shadow-lg shadow-primary/25"
-              >
-                Salvar Todos os Serviços
-              </button>
-            </div>
+            {/* Modal for Creating New Service */}
+            {isCreatingService && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md">
+                <div className="w-full max-w-lg bg-card border border-white/15 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <h3 className="text-lg font-heading font-bold text-white">
+                      Adicionar Novo Serviço
+                    </h3>
+                    <button
+                      onClick={() => setIsCreatingService(false)}
+                      className="text-muted-foreground hover:text-white text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Nome do Serviço *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={serviceForm.name}
+                        onChange={(e) =>
+                          setServiceForm({ ...serviceForm, name: e.target.value })
+                        }
+                        placeholder="Ex: Consultoria de Tráfego Pago"
+                        className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Descrição do Serviço *
+                      </label>
+                      <textarea
+                        rows={3}
+                        required
+                        value={serviceForm.description}
+                        onChange={(e) =>
+                          setServiceForm({ ...serviceForm, description: e.target.value })
+                        }
+                        placeholder="Explique o que este serviço entrega para o cliente..."
+                        className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={serviceForm.highlight}
+                        onChange={(e) =>
+                          setServiceForm({ ...serviceForm, highlight: e.target.checked })
+                        }
+                        className="rounded border-white/20 text-primary focus:ring-0 w-4 h-4"
+                      />
+                      <span>Destacar no topo da página /servicos</span>
+                    </label>
+
+                    {serviceForm.highlight && (
+                      <div className="space-y-3 pt-2">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-300 mb-1">
+                            Selo / Badge (opcional)
+                          </label>
+                          <input
+                            type="text"
+                            value={serviceForm.badge}
+                            onChange={(e) =>
+                              setServiceForm({ ...serviceForm, badge: e.target.value })
+                            }
+                            placeholder="Ex: Mais Procurado"
+                            className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs outline-none focus:border-primary"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-300 mb-1">
+                            Lista de Benefícios (um por linha)
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={serviceForm.benefits.join('\n')}
+                            onChange={(e) =>
+                              setServiceForm({
+                                ...serviceForm,
+                                benefits: e.target.value.split('\n').filter(Boolean),
+                              })
+                            }
+                            placeholder="Item 1&#10;Item 2"
+                            className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs outline-none focus:border-primary font-mono"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setIsCreatingService(false)}
+                      className="px-4 py-2 rounded-xl bg-white/5 text-white text-xs font-medium"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!serviceForm.name.trim()) {
+                          alert('Informe o nome do serviço.');
+                          return;
+                        }
+                        addService(serviceForm);
+                        showToast(`Serviço "${serviceForm.name}" adicionado com sucesso!`);
+                        setIsCreatingService(false);
+                      }}
+                      className="px-5 py-2 rounded-xl bg-primary text-white text-xs font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all"
+                    >
+                      Criar Serviço
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

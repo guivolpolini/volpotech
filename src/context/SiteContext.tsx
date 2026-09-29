@@ -30,7 +30,9 @@ interface SiteContextType {
   addProject: (project: Omit<ProjectItem, 'id'>) => void;
   updateProject: (id: string, project: Partial<ProjectItem>) => void;
   deleteProject: (id: string) => void;
+  addService: (service: Omit<ServiceItem, 'id'>) => void;
   updateService: (id: string, service: Partial<ServiceItem>) => void;
+  deleteService: (id: string) => void;
   updatePlan: (id: string, plan: Partial<PlanItem>) => void;
   addPlan: (plan: Omit<PlanItem, 'id'>) => void;
   deletePlan: (id: string) => void;
@@ -45,7 +47,7 @@ interface SiteContextType {
   importData: (jsonString: string) => boolean;
 }
 
-const STORAGE_KEY = 'volpotech_site_data_v2';
+const STORAGE_KEY = 'volpotech_site_data_v3';
 
 const safeConfig = (raw: any): SiteConfig => {
   if (!raw || typeof raw !== 'object') return defaultSiteConfig;
@@ -99,6 +101,9 @@ const safeServices = (raw: any): ServiceItem[] => {
     description: s?.description || '',
     icon: s?.icon || 'Layout',
     order: typeof s?.order === 'number' ? s.order : idx,
+    badge: s?.badge,
+    benefits: Array.isArray(s?.benefits) ? s.benefits : undefined,
+    highlight: !!s?.highlight,
   }));
 };
 
@@ -238,10 +243,22 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const addService = (serviceData: Omit<ServiceItem, 'id'>) => {
+    const newService: ServiceItem = {
+      ...serviceData,
+      id: 'srv_' + Date.now().toString(36),
+    };
+    setServices((prev) => [...prev, newService]);
+  };
+
   const updateService = (id: string, updated: Partial<ServiceItem>) => {
     setServices((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...updated } : s))
     );
+  };
+
+  const deleteService = (id: string) => {
+    setServices((prev) => prev.filter((s) => s.id !== id));
   };
 
   const updatePlan = (id: string, updated: Partial<PlanItem>) => {
@@ -352,7 +369,9 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addProject,
         updateProject,
         deleteProject,
+        addService,
         updateService,
+        deleteService,
         updatePlan,
         addPlan,
         deletePlan,
