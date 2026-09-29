@@ -5,6 +5,32 @@ import { services as defaultServices, ServiceItem } from '@/data/services';
 import { plans as defaultPlans, PlanItem } from '@/data/plans';
 import { faqs as defaultFaqs, FaqItem } from '@/data/faq';
 
+export interface BriefingData {
+  contactName: string;
+  companyName: string;
+  whatsapp: string;
+  email: string;
+  cityState?: string;
+  instagram?: string;
+  businessSegment: string;
+  businessSummary: string;
+  targetAudience: string;
+  mainDifferentials: string;
+  siteGoal: string;
+  hasDomain: string;
+  domainName?: string;
+  hasLogo: string;
+  pagesNeeded: string[];
+  featuresNeeded: string[];
+  preferredColors?: string;
+  visualStyle: string;
+  referenceWebsites?: string;
+  dislikedItems?: string;
+  hasContentReady: string;
+  deadlineExpectation: string;
+  additionalNotes?: string;
+}
+
 export interface LeadItem {
   id: string;
   name: string;
@@ -13,10 +39,11 @@ export interface LeadItem {
   email?: string;
   city?: string;
   plan?: string;
-  type: 'orcamento' | 'contato';
+  type: 'orcamento' | 'contato' | 'briefing';
   message?: string;
   date: string;
   status: 'novo' | 'em_atendimento' | 'concluido';
+  briefingData?: BriefingData;
 }
 
 interface SiteContextType {

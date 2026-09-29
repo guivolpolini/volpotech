@@ -19,6 +19,11 @@ import {
   RotateCcw,
   CheckCircle2,
   Eye,
+  Sparkles,
+  Copy,
+  FileText,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useSiteData, LeadItem } from '@/context/SiteContext';
 import { ProjectItem } from '@/data/projects';
@@ -65,6 +70,7 @@ export const AdminPage: React.FC = () => {
 
   // Success message toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [expandedBriefingId, setExpandedBriefingId] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -324,13 +330,51 @@ export const AdminPage: React.FC = () => {
         {/* TAB 1: LEADS */}
         {activeTab === 'leads' && (
           <div className="space-y-6">
+            {/* Briefing link banner for client sending */}
+            <div className="p-4 sm:p-5 rounded-2xl glass border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-primary/5">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary text-[11px] font-bold">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Questionário de Briefing para Clientes</span>
+                </div>
+                <h3 className="text-sm sm:text-base font-heading font-bold text-white">
+                  Envie o link para o cliente responder tudo o que você precisa
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  As respostas caem instantaneamente em <strong>volpootech@gmail.com</strong> e ficam salvas abaixo nesta aba.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                <a
+                  href="/briefing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 sm:flex-initial text-center px-4 py-2 rounded-xl glass border border-white/10 hover:border-white/20 text-white text-xs font-medium transition-colors"
+                >
+                  Abrir formulário
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = `${window.location.origin}/briefing`;
+                    navigator.clipboard.writeText(url);
+                    showToast('Link do briefing copiado para a área de transferência!');
+                  }}
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition-all shadow-md shadow-primary/20"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copiar link</span>
+                </button>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-heading font-bold text-white">
-                  Contatos e Orçamentos Recebidos
+                  Contatos, Orçamentos e Briefings Recebidos
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Pessoas que preencheram o formulário no site e solicitaram proposta.
+                  Gerencie as respostas recebidas pelo site e acompanhe o status de atendimento.
                 </p>
               </div>
             </div>
@@ -340,100 +384,222 @@ export const AdminPage: React.FC = () => {
                 <Users className="w-12 h-12 text-muted-foreground/40 mx-auto" />
                 <h3 className="text-base font-semibold text-white">Nenhum lead recebido ainda</h3>
                 <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                  Assim que um visitante preencher o formulário de orçamento ou contato no site, ele aparecerá aqui com os detalhes.
+                  Assim que um visitante preencher o formulário de orçamento, contato ou briefing no site, ele aparecerá aqui com os detalhes.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {leads.map((lead: LeadItem) => (
-                  <div
-                    key={lead.id}
-                    className="p-6 rounded-2xl glass border border-white/10 space-y-4 relative"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
-                          {lead.type === 'orcamento' ? 'Orçamento' : 'Contato'}
-                        </span>
-                        <h3 className="text-lg font-heading font-bold text-white mt-1">
-                          {lead.name}
-                        </h3>
-                        {lead.company && (
-                          <p className="text-xs text-muted-foreground">Empresa: {lead.company}</p>
-                        )}
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{lead.date}</p>
+                {leads.map((lead: LeadItem) => {
+                  const isBriefing = lead.type === 'briefing';
+                  const isExpanded = expandedBriefingId === lead.id;
+                  const b = lead.briefingData;
+
+                  return (
+                    <div
+                      key={lead.id}
+                      className={`p-6 rounded-2xl glass border transition-all space-y-4 relative ${
+                        isBriefing ? 'border-primary/40 bg-primary/[0.02]' : 'border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <span
+                            className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${
+                              isBriefing
+                                ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                                : lead.type === 'orcamento'
+                                ? 'bg-primary/20 text-primary border-primary/30'
+                                : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                            }`}
+                          >
+                            {isBriefing ? 'Briefing de Projeto' : lead.type === 'orcamento' ? 'Orçamento' : 'Contato'}
+                          </span>
+                          <h3 className="text-lg font-heading font-bold text-white mt-1">
+                            {lead.name}
+                          </h3>
+                          {lead.company && (
+                            <p className="text-xs text-muted-foreground">Empresa: {lead.company}</p>
+                          )}
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{lead.date}</p>
+                        </div>
+
+                        <select
+                          value={lead.status}
+                          onChange={(e) =>
+                            updateLeadStatus(lead.id, e.target.value as LeadItem['status'])
+                          }
+                          className={`text-xs px-2.5 py-1 rounded-lg border outline-none font-medium ${
+                            lead.status === 'novo'
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                              : lead.status === 'em_atendimento'
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                              : 'bg-white/5 text-muted-foreground border-white/10'
+                          }`}
+                        >
+                          <option value="novo">Novo</option>
+                          <option value="em_atendimento">Em Atendimento</option>
+                          <option value="concluido">Concluído</option>
+                        </select>
                       </div>
 
-                      <select
-                        value={lead.status}
-                        onChange={(e) =>
-                          updateLeadStatus(lead.id, e.target.value as LeadItem['status'])
-                        }
-                        className={`text-xs px-2.5 py-1 rounded-lg border outline-none font-medium ${
-                          lead.status === 'novo'
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                            : lead.status === 'em_atendimento'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                            : 'bg-white/5 text-muted-foreground border-white/10'
-                        }`}
-                      >
-                        <option value="novo">Novo</option>
-                        <option value="em_atendimento">Em Atendimento</option>
-                        <option value="concluido">Concluído</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs text-gray-300 bg-white/[0.02] p-3 rounded-xl border border-white/5">
-                      <p>
-                        <strong>WhatsApp:</strong> {lead.whatsapp}
-                      </p>
-                      {lead.email && (
+                      <div className="space-y-1.5 text-xs text-gray-300 bg-white/[0.02] p-3 rounded-xl border border-white/5">
                         <p>
-                          <strong>E-mail:</strong> {lead.email}
+                          <strong>WhatsApp:</strong> {lead.whatsapp}
                         </p>
-                      )}
-                      {lead.city && (
-                        <p>
-                          <strong>Cidade:</strong> {lead.city}
-                        </p>
-                      )}
-                      {lead.plan && (
-                        <p>
-                          <strong>Interesse:</strong> {lead.plan}
-                        </p>
-                      )}
-                      {lead.message && (
-                        <p className="pt-1 text-muted-foreground border-t border-white/5">
-                          "{lead.message}"
-                        </p>
-                      )}
-                    </div>
+                        {lead.email && (
+                          <p>
+                            <strong>E-mail:</strong> {lead.email}
+                          </p>
+                        )}
+                        {lead.city && (
+                          <p>
+                            <strong>Cidade:</strong> {lead.city}
+                          </p>
+                        )}
+                        {lead.plan && (
+                          <p>
+                            <strong>Interesse:</strong> {lead.plan}
+                          </p>
+                        )}
+                        {lead.message && (
+                          <p className="pt-1 text-muted-foreground border-t border-white/5">
+                            "{lead.message}"
+                          </p>
+                        )}
+                      </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <a
-                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
-                          `Olá ${lead.name}! Sou da VolpoTech. Vi sua solicitação no site e gostaria de conversar.`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold transition-colors"
-                      >
-                        <MessageCircle className="w-4 h-4 fill-current" />
-                        <span>Chamar no WhatsApp</span>
-                      </a>
+                      {/* DETALHES COMPLETOS DO BRIEFING (SE HOUVER) */}
+                      {isBriefing && b && (
+                        <div className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedBriefingId(isExpanded ? null : lead.id)
+                            }
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 text-xs text-white transition-colors"
+                          >
+                            <span className="flex items-center gap-1.5 font-medium">
+                              <FileText className="w-3.5 h-3.5 text-primary" />
+                              <span>{isExpanded ? 'Ocultar detalhes do briefing' : 'Ver todas as respostas do briefing'}</span>
+                            </span>
+                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
 
-                      <button
-                        onClick={() => {
-                          if (confirm('Excluir este lead?')) deleteLead(lead.id);
-                        }}
-                        className="p-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"
-                        title="Excluir lead"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                          {isExpanded && (
+                            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs space-y-3 animate-in fade-in duration-200">
+                              <div>
+                                <strong className="text-white">Ramo:</strong> {b.businessSegment}
+                              </div>
+                              <div>
+                                <strong className="text-white">O que faz:</strong> {b.businessSummary}
+                              </div>
+                              {b.targetAudience && (
+                                <div>
+                                  <strong className="text-white">Público-alvo:</strong> {b.targetAudience}
+                                </div>
+                              )}
+                              {b.mainDifferentials && (
+                                <div>
+                                  <strong className="text-white">Diferenciais:</strong> {b.mainDifferentials}
+                                </div>
+                              )}
+                              <div>
+                                <strong className="text-white">Objetivo do site:</strong> {b.siteGoal}
+                              </div>
+                              <div>
+                                <strong className="text-white">Domínio:</strong> {b.hasDomain === 'sim' ? `Já tem (${b.domainName})` : b.hasDomain === 'nao' ? 'Não tem' : 'Precisa de ajuda'}
+                              </div>
+                              <div>
+                                <strong className="text-white">Logotipo:</strong> {b.hasLogo}
+                              </div>
+                              <div>
+                                <strong className="text-white">Páginas Desejadas ({b.pagesNeeded?.length || 0}):</strong>
+                                <ul className="list-disc list-inside mt-1 text-muted-foreground space-y-0.5">
+                                  {b.pagesNeeded?.map((p: string, idx: number) => (
+                                    <li key={idx}>{p}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <strong className="text-white">Recursos Escolhidos:</strong>
+                                <ul className="list-disc list-inside mt-1 text-muted-foreground space-y-0.5">
+                                  {b.featuresNeeded?.map((f: string, idx: number) => (
+                                    <li key={idx}>{f}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <strong className="text-white">Estilo Visual:</strong> {b.visualStyle}
+                              </div>
+                              {b.preferredColors && (
+                                <div>
+                                  <strong className="text-white">Cores:</strong> {b.preferredColors}
+                                </div>
+                              )}
+                              {b.referenceWebsites && (
+                                <div>
+                                  <strong className="text-white">Sites de Referência:</strong> {b.referenceWebsites}
+                                </div>
+                              )}
+                              {b.dislikedItems && (
+                                <div>
+                                  <strong className="text-white">O que evitar:</strong> {b.dislikedItems}
+                                </div>
+                              )}
+                              <div>
+                                <strong className="text-white">Situação do Conteúdo:</strong> {b.hasContentReady}
+                              </div>
+                              <div>
+                                <strong className="text-white">Prazo:</strong> {b.deadlineExpectation}
+                              </div>
+                              {b.additionalNotes && (
+                                <div>
+                                  <strong className="text-white">Obs:</strong> {b.additionalNotes}
+                                </div>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const text = `Briefing: ${lead.company} (${lead.name})\nWhatsApp: ${lead.whatsapp}\nRamo: ${b.businessSegment}\nEstilo: ${b.visualStyle}\nPrazo: ${b.deadlineExpectation}\nPáginas:\n${b.pagesNeeded?.map((p: string) => ` - ${p}`).join('\n')}`;
+                                  navigator.clipboard.writeText(text);
+                                  showToast('Resumo do briefing copiado!');
+                                }}
+                                className="w-full mt-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-[11px] font-medium transition-colors"
+                              >
+                                Copiar resumo deste briefing
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-2">
+                        <a
+                          href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
+                            `Olá ${lead.name}! Sou da VolpoTech. Vi sua solicitação ${isBriefing ? 'de briefing' : ''} no site e gostaria de conversar.`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold transition-colors"
+                        >
+                          <MessageCircle className="w-4 h-4 fill-current" />
+                          <span>Chamar no WhatsApp</span>
+                        </a>
+
+                        <button
+                          onClick={() => {
+                            if (confirm('Excluir este lead?')) deleteLead(lead.id);
+                          }}
+                          className="p-2 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"
+                          title="Excluir lead"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

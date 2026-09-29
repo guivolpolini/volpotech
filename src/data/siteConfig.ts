@@ -49,7 +49,7 @@ export const siteConfig: SiteConfig = {
   contact: {
     whatsapp: '5511999999999', // Configure o WhatsApp real da VolpoTech aqui
     whatsappDisplay: '(11) 99999-9999',
-    email: 'contato@volpotech.com.br',
+    email: 'volpootech@gmail.com',
     instagram: 'https://instagram.com/volpotech',
     instagramHandle: '@volpotech',
     city: 'São Caetano do Sul',
