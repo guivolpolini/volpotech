@@ -60,11 +60,6 @@ export const Footer: React.FC = () => {
                   Contato
                 </Link>
               </li>
-              <li>
-                <Link to="/briefing" className="text-primary hover:text-primary-light transition-colors font-medium">
-                  Briefing do Cliente
-                </Link>
-              </li>
             </ul>
           </div>
 

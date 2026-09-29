@@ -1,337 +1,766 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  Check,
+  User,
+  Building,
+  Palette,
+  Clock,
+  CheckCircle2,
   ArrowRight,
   ArrowLeft,
+  Send,
+  Loader2,
   MessageCircle,
-  CheckCircle2,
+  Copy,
+  Check,
+  Sparkles,
+  Layers,
+  Tag,
 } from 'lucide-react';
-import { useSiteData } from '@/context/SiteContext';
+import { useSiteData, BriefingData } from '@/context/SiteContext';
+
+const AVAILABLE_PAGES = [
+  'Início / Home (com destaques e chamada para ação)',
+  'Sobre Nós / Quem Somos (história, valores e equipe)',
+  'Serviços / Especialidades (detalhamento do que oferece)',
+  'Catálogo / Portfólio / Projetos Realizados',
+  'Depoimentos de Clientes & Prova Social',
+  'Contato & Localização (com mapa integrado)',
+  'Dúvidas Frequentes (FAQ interativo)',
+  'Blog / Notícias / Artigos',
+];
+
+const AVAILABLE_FEATURES = [
+  'Botão flutuante de WhatsApp com mensagem personalizada',
+  'Formulário de contato / orçamento direto por e-mail',
+  'Localização interativa no Google Maps',
+  'Integração com Placa NFC / Avaliações Google 5 Estrelas',
+  'Sistema de Agendamento online ou link Cal.com/Calendly',
+  'Galeria de fotos com zoom / Antes e Depois',
+  'Catálogo de produtos ou tabela de preços em PDF',
+  'Botões de chamada rápida para ligação telefônica',
+];
+
+const VISUAL_STYLES = [
+  { id: 'moderno', label: 'Moderno & Clean', desc: 'Visual leve, espaçoso, tipografia elegante e minimalista' },
+  { id: 'tecnologico', label: 'Tecnológico & Dark', desc: 'Visual futurista, tons escuros, luzes neon e visual tech' },
+  { id: 'corporativo', label: 'Corporativo & Tradicional', desc: 'Visual sóbrio, formal, transmita autoridade e solidez' },
+  { id: 'acolhedor', label: 'Acolhedor & Humanizado', desc: 'Tons quentes, foco em pessoas, atendimento e proximidade' },
+  { id: 'criativo', label: 'Criativo & Ousado', desc: 'Cores vibrantes, contrastes marcantes e design diferenciado' },
+];
 
 export const QuotePage: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const initialPlan = searchParams.get('plano') || searchParams.get('servico') || '';
+  const initialParam = searchParams.get('plano') || searchParams.get('servico') || '';
   const { config, addLead } = useSiteData();
 
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 5;
 
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    company: '',
+  const [formData, setFormData] = useState<BriefingData & { selectedPlanOrService: string }>({
+    selectedPlanOrService: initialParam,
+    contactName: '',
+    companyName: '',
     whatsapp: '',
     email: '',
+    cityState: config.contact.city ? `${config.contact.city} - SP` : '',
     instagram: '',
-    city: config.contact.city,
-    businessType: '',
-    hasWebsite: 'Não',
-    selectedPlan: initialPlan.includes('prof')
-      ? 'Plano Profissional'
-      : initialPlan.includes('placa')
-      ? 'Placa Google de Avaliações'
-      : 'Plano Essencial',
-    urgency: 'Nas próximas 2 semanas',
-    features: [] as string[],
-    goals: '',
+    businessSegment: '',
+    businessSummary: '',
+    targetAudience: '',
+    mainDifferentials: '',
+    siteGoal: 'Gerar mais contatos e pedidos de orçamento pelo WhatsApp',
+    hasDomain: 'preciso_ajuda',
+    domainName: '',
+    hasLogo: 'vetor_alta',
+    pagesNeeded: [
+      'Início / Home (com destaques e chamada para ação)',
+      'Sobre Nós / Quem Somos (história, valores e equipe)',
+      'Serviços / Especialidades (detalhamento do que oferece)',
+      'Contato & Localização (com mapa integrado)',
+    ],
+    featuresNeeded: [
+      'Botão flutuante de WhatsApp com mensagem personalizada',
+      'Formulário de contato / orçamento direto por e-mail',
+      'Localização interativa no Google Maps',
+    ],
+    preferredColors: '',
+    visualStyle: 'Moderno & Clean',
+    referenceWebsites: '',
+    dislikedItems: '',
+    hasContentReady: 'parcial',
+    deadlineExpectation: 'Normal (1 a 2 semanas)',
+    additionalNotes: '',
   });
 
-  const handleTextChange = (field: string, value: string) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const updateField = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const toggleFeature = (feat: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      features: prev.features.includes(feat)
-        ? prev.features.filter((f) => f !== feat)
-        : [...prev.features, feat],
-    }));
+  const togglePage = (page: string) => {
+    setFormData((prev) => {
+      const exists = prev.pagesNeeded.includes(page);
+      return {
+        ...prev,
+        pagesNeeded: exists
+          ? prev.pagesNeeded.filter((p) => p !== page)
+          : [...prev.pagesNeeded, page],
+      };
+    });
   };
 
-  const featureOptions = [
-    'Catálogo de Produtos',
-    'Agendamento Online 24h',
-    'Recebimento PIX / Cartão',
-    'Placa Google com QR Code e NFC',
-    'Integração Google Maps e SEO Local',
-    'Galeria de Fotos / Antes e Depois',
-  ];
+  const toggleFeature = (feat: string) => {
+    setFormData((prev) => {
+      const exists = prev.featuresNeeded.includes(feat);
+      return {
+        ...prev,
+        featuresNeeded: exists
+          ? prev.featuresNeeded.filter((f) => f !== feat)
+          : [...prev.featuresNeeded, feat],
+      };
+    });
+  };
 
-  const handleNext = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (currentStep === 1) {
-      if (!formData.name.trim() || !formData.whatsapp.trim()) {
-        alert('Por favor, preencha pelo menos seu Nome e WhatsApp para continuarmos.');
-        return;
+  const validateStep = (step: number): boolean => {
+    if (step === 1) {
+      if (!formData.contactName.trim()) {
+        alert('Por favor, informe seu nome completo.');
+        return false;
       }
-      setCurrentStep(2);
-    } else if (currentStep === 2) {
-      setCurrentStep(3);
-    } else if (currentStep === 3) {
-      // Save lead to local context/storage for admin dashboard
-      addLead({
-        name: formData.name,
-        company: formData.company,
-        whatsapp: formData.whatsapp,
-        email: formData.email,
-        city: formData.city,
-        plan: formData.selectedPlan,
-        type: 'orcamento',
-        message: `Ramo: ${formData.businessType} | Prazo: ${formData.urgency} | Recursos: ${formData.features.join(', ')} | Objetivo: ${formData.goals}`,
-      });
-      setSubmitted(true);
+      if (!formData.companyName.trim()) {
+        alert('Por favor, informe o nome da sua empresa ou negócio.');
+        return false;
+      }
+      if (!formData.whatsapp.trim()) {
+        alert('Por favor, informe seu WhatsApp para enviarmos a proposta.');
+        return false;
+      }
+      if (!formData.email.trim()) {
+        alert('Por favor, informe seu e-mail.');
+        return false;
+      }
+    }
+    if (step === 2) {
+      if (!formData.businessSegment.trim()) {
+        alert('Por favor, informe o ramo de atuação da empresa.');
+        return false;
+      }
+      if (!formData.businessSummary.trim()) {
+        alert('Por favor, resuma os principais serviços ou produtos oferecidos.');
+        return false;
+      }
+    }
+    if (step === 3) {
+      if (formData.pagesNeeded.length === 0) {
+        alert('Selecione pelo menos 1 página para o site.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+      window.scrollTo({ top: 120, behavior: 'smooth' });
     }
   };
 
-  const generateWhatsAppMessage = () => {
-    const text = `*Nova Solicitação de Orçamento - VolpoTech*
----------------------------------------
-*Nome:* ${formData.name}
-*Empresa:* ${formData.company || 'Não informada'}
-*WhatsApp:* ${formData.whatsapp}
-*E-mail:* ${formData.email || 'Não informado'}
-*Instagram:* ${formData.instagram || 'Não informado'}
-*Cidade:* ${formData.city}
-
-*Plano/Interesse:* ${formData.selectedPlan}
-*Ramo/Atividade:* ${formData.businessType || 'Não informado'}
-*Já possui site:* ${formData.hasWebsite}
-*Prazo:* ${formData.urgency}
-*Recursos Desejados:* ${formData.features.length > 0 ? formData.features.join(', ') : 'Padrão do plano'}
-
-*Objetivo/Observações:*
-${formData.goals || 'Gostaria de saber mais informações e iniciar o projeto.'}`;
-    return text;
+  const prevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 120, behavior: 'smooth' });
   };
 
-  const dynamicWhatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
-    generateWhatsAppMessage()
+  const generateSummaryText = () => {
+    return `📋 *SOLICITAÇÃO DE ORÇAMENTO & BRIEFING - VOLPOTECH*
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+${formData.selectedPlanOrService ? `🏷️ *Interesse:* ${formData.selectedPlanOrService}\n` : ''}👤 *1. Responsável & Empresa*
+• Nome: ${formData.contactName}
+• Empresa: ${formData.companyName}
+• WhatsApp: ${formData.whatsapp}
+• E-mail: ${formData.email}
+• Cidade/UF: ${formData.cityState || 'Não informado'}
+• Instagram: ${formData.instagram || 'Não informado'}
+
+💼 *2. Sobre o Negócio*
+• Ramo: ${formData.businessSegment}
+• Resumo: ${formData.businessSummary}
+• Público-Alvo: ${formData.targetAudience || 'Geral'}
+• Diferenciais: ${formData.mainDifferentials || 'Não informado'}
+• Objetivo do Site: ${formData.siteGoal}
+
+🌐 *3. Estrutura do Site*
+• Domínio: ${formData.hasDomain === 'sim' ? `Já possui (${formData.domainName})` : formData.hasDomain === 'nao' ? 'Não possui' : 'Precisa de ajuda para registrar'}
+• Logotipo: ${formData.hasLogo === 'vetor_alta' ? 'Tem vetor / alta resolução' : formData.hasLogo === 'imagem_simples' ? 'Tem imagem simples' : 'Precisa de criação'}
+• Páginas Desejadas (${formData.pagesNeeded.length}):
+${formData.pagesNeeded.map((p) => `  - ${p}`).join('\n')}
+• Recursos Selecionados:
+${formData.featuresNeeded.map((f) => `  - ${f}`).join('\n')}
+
+🎨 *4. Identidade & Estilo*
+• Estilo Visual: ${formData.visualStyle}
+• Cores de Preferência: ${formData.preferredColors || 'Livre / Escolha da VolpoTech'}
+• Sites de Referência: ${formData.referenceWebsites || 'Nenhum informado'}
+• O que NÃO quer: ${formData.dislikedItems || 'Nenhuma restrição'}
+
+⏳ *5. Conteúdo & Prazos*
+• Textos e Fotos: ${formData.hasContentReady === 'tudo_pronto' ? 'Tudo pronto' : formData.hasContentReady === 'parcial' ? 'Parcialmente pronto' : 'Precisa de criação completa'}
+• Prazo Desejado: ${formData.deadlineExpectation}
+• Observações Adicionais: ${formData.additionalNotes || 'Nenhuma'}`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
+
+    setIsSubmitting(true);
+
+    const fullSummary = generateSummaryText();
+
+    // 1. Salvar no contexto e painel administrativo local
+    addLead({
+      name: formData.contactName,
+      company: formData.companyName,
+      whatsapp: formData.whatsapp,
+      email: formData.email,
+      city: formData.cityState,
+      plan: formData.selectedPlanOrService || formData.siteGoal,
+      type: 'orcamento',
+      message: `Orçamento & Briefing: ${formData.companyName} (${formData.businessSegment}) - Estilo: ${formData.visualStyle} - Prazo: ${formData.deadlineExpectation}`,
+      briefingData: formData,
+    });
+
+    // 2. Disparar e-mail diretamente para volpootech@gmail.com via FormSubmit
+    try {
+      await fetch('https://formsubmit.co/ajax/volpootech@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `🚀 Novo Orçamento & Briefing: ${formData.companyName} (${formData.contactName})`,
+          _replyto: formData.email,
+          _template: 'table',
+          _captcha: 'false',
+          'Interesse / Referência': formData.selectedPlanOrService || 'Orçamento Geral',
+          'Nome do Responsável': formData.contactName,
+          'Empresa': formData.companyName,
+          'WhatsApp': formData.whatsapp,
+          'E-mail': formData.email,
+          'Cidade e Estado': formData.cityState || 'Não informado',
+          'Instagram': formData.instagram || 'Não informado',
+          'Ramo de Atuação': formData.businessSegment,
+          'O que a Empresa Faz': formData.businessSummary,
+          'Público-Alvo': formData.targetAudience || 'Não informado',
+          'Diferencial Competitivo': formData.mainDifferentials || 'Não informado',
+          'Objetivo do Site': formData.siteGoal,
+          'Situação do Domínio': formData.hasDomain + (formData.domainName ? ` (${formData.domainName})` : ''),
+          'Situação do Logotipo': formData.hasLogo,
+          'Páginas Selecionadas': formData.pagesNeeded.join('; '),
+          'Recursos Selecionados': formData.featuresNeeded.join('; '),
+          'Estilo Visual Escolhido': formData.visualStyle,
+          'Cores Preferidas': formData.preferredColors || 'Livre / VolpoTech',
+          'Sites de Referência': formData.referenceWebsites || 'Nenhum',
+          'O que Evitar no Site': formData.dislikedItems || 'Nenhum',
+          'Situação do Conteúdo': formData.hasContentReady,
+          'Expectativa de Prazo': formData.deadlineExpectation,
+          'Observações Finais': formData.additionalNotes || 'Nenhuma',
+          'Resumo Completo Formatado': fullSummary,
+        }),
+      });
+    } catch (err) {
+      console.warn('FormSubmit disparo concluído com fallback:', err);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generateSummaryText());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const whatsAppUrl = `https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(
+    `Olá Guilherme! Acabei de enviar o pedido de orçamento e briefing pelo site para o projeto da empresa *${formData.companyName}*.\n\nFico no aguardo da sua proposta!`
   )}`;
 
   return (
-    <div className="pt-32 pb-24 min-h-screen">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-28 pb-24 min-h-screen bg-background text-foreground">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-10 space-y-3">
-          <span className="text-xs uppercase tracking-widest text-primary font-semibold">
-            Solicite sua proposta
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Seu novo site pronto em poucos passos.
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Orçamento Sob Medida & Briefing</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-extrabold text-white tracking-tight">
+            Seu novo site pronto em poucos passos
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base">
-            Leva menos de 2 minutos. Sem compromisso e sem custo inicial.
+            Conte sobre o seu negócio e defina as características do seu projeto para montarmos uma proposta sob medida com o escopo exato que você precisa.
           </p>
+
+          {formData.selectedPlanOrService && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-primary font-medium mt-1">
+              <Tag className="w-3.5 h-3.5" />
+              <span>Interesse selecionado: {formData.selectedPlanOrService}</span>
+            </div>
+          )}
         </div>
 
-        {/* Stepper Indicators */}
-        {!submitted && (
-          <div className="flex items-center justify-between max-w-md mx-auto mb-10 relative">
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/10 -translate-y-1/2 z-0" />
-            {[
-              { num: 1, label: 'Identidade' },
-              { num: 2, label: 'Negócio' },
-              { num: 3, label: 'Visão' },
-            ].map((step) => {
-              const isActive = currentStep === step.num;
-              const isPast = currentStep > step.num;
-              return (
-                <div key={step.num} className="relative z-10 flex flex-col items-center">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                      isPast
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                        : isActive
-                        ? 'bg-primary text-white ring-4 ring-primary/20 shadow-lg shadow-primary/25'
-                        : 'bg-card text-muted-foreground border border-white/10'
-                    }`}
-                  >
-                    {isPast ? <Check className="w-5 h-5" /> : step.num}
-                  </div>
-                  <span
-                    className={`text-xs mt-2 font-medium ${
-                      isActive ? 'text-white font-semibold' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {submitted ? (
+          /* TELA DE SUCESSO */
+          <div className="p-8 sm:p-12 rounded-3xl glass border border-emerald-500/30 text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
+              <CheckCircle2 className="w-9 h-9" />
+            </div>
 
-        {/* Form Card */}
-        <div className="rounded-3xl glass border border-white/10 p-6 sm:p-10 shadow-2xl relative">
-          {!submitted ? (
-            <form onSubmit={handleNext} className="space-y-6">
-              {/* STEP 1: Identidade */}
+            <div className="space-y-2 max-w-lg mx-auto">
+              <h2 className="text-2xl sm:text-3xl font-heading font-bold text-white">
+                Proposta solicitada com sucesso!
+              </h2>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                Todas as especificações do projeto da <strong className="text-white">{formData.companyName}</strong> foram enviadas diretamente para nossa equipe em <strong className="text-emerald-400">volpootech@gmail.com</strong>.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 max-w-lg mx-auto text-xs text-muted-foreground text-left space-y-1">
+              <p className="font-semibold text-white">O que acontece agora?</p>
+              <p>1. Analisamos seus objetivos, estrutura necessária e referências.</p>
+              <p>2. Enviamos uma proposta personalizada diretamente no seu WhatsApp ({formData.whatsapp}).</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <a
+                href={whatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20"
+              >
+                <MessageCircle className="w-5 h-5 fill-current" />
+                <span>Avisar no WhatsApp</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl glass border border-white/10 hover:border-white/20 text-white font-medium text-sm transition-all"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Resumo copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-primary" />
+                    <span>Copiar resumo do pedido</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* FORMULÁRIO MULTI-ETAPAS */
+          <div className="rounded-3xl glass border border-white/10 shadow-2xl overflow-hidden">
+            {/* Barra de Progresso */}
+            <div className="bg-white/[0.02] border-b border-white/10 p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3 text-xs">
+                <span className="font-semibold text-primary uppercase tracking-wider">
+                  Etapa {currentStep} de {totalSteps}
+                </span>
+                <span className="text-muted-foreground">
+                  {currentStep === 1 && 'Identificação & Contato'}
+                  {currentStep === 2 && 'Sobre o Negócio'}
+                  {currentStep === 3 && 'Estrutura & Recursos'}
+                  {currentStep === 4 && 'Identidade Visual & Estilo'}
+                  {currentStep === 5 && 'Materiais, Prazos & Envio'}
+                </span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
+                  style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                />
+              </div>
+
+              {/* Indicadores de Etapas */}
+              <div className="grid grid-cols-5 gap-1 mt-4 text-center">
+                {[
+                  { num: 1, label: 'Contato', icon: User },
+                  { num: 2, label: 'Negócio', icon: Building },
+                  { num: 3, label: 'Estrutura', icon: Layers },
+                  { num: 4, label: 'Estilo', icon: Palette },
+                  { num: 5, label: 'Prazo', icon: Clock },
+                ].map((s) => {
+                  const Icon = s.icon;
+                  const isDone = currentStep > s.num;
+                  const isCurrent = currentStep === s.num;
+                  return (
+                    <button
+                      key={s.num}
+                      type="button"
+                      onClick={() => {
+                        if (s.num < currentStep) setCurrentStep(s.num);
+                      }}
+                      className={`flex flex-col items-center gap-1 transition-all ${
+                        isCurrent
+                          ? 'text-primary font-bold'
+                          : isDone
+                          ? 'text-white cursor-pointer'
+                          : 'text-muted-foreground/50 cursor-not-allowed'
+                      }`}
+                    >
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all ${
+                          isCurrent
+                            ? 'bg-primary text-white ring-2 ring-primary/40'
+                            : isDone
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-white/5 text-muted-foreground'
+                        }`}
+                      >
+                        {isDone ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
+                      </div>
+                      <span className="text-[10px] hidden sm:inline">{s.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Conteúdo da Etapa */}
+            <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+              {/* ETAPA 1: CONTATO */}
               {currentStep === 1 && (
-                <div className="space-y-5 animate-in fade-in duration-300">
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="border-b border-white/5 pb-3">
+                    <h3 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                      <User className="w-5 h-5 text-primary" />
+                      <span>Identificação e Contato</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Quem é o responsável pelo projeto e onde devemos enviar a proposta.
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Seu nome *
+                        Seu Nome Completo *
                       </label>
                       <input
                         type="text"
                         required
-                        value={formData.name}
-                        onChange={(e) => handleTextChange('name', e.target.value)}
-                        placeholder="Ex: Guilherme"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        value={formData.contactName}
+                        onChange={(e) => updateField('contactName', e.target.value)}
+                        placeholder="Ex: Guilherme Silva"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
+
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Nome da sua empresa
+                        Nome da Empresa ou Negócio *
                       </label>
                       <input
                         type="text"
-                        value={formData.company}
-                        onChange={(e) => handleTextChange('company', e.target.value)}
-                        placeholder="Ex: Barbearia do Centro"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        required
+                        value={formData.companyName}
+                        onChange={(e) => updateField('companyName', e.target.value)}
+                        placeholder="Ex: Barbearia Vip / Clínica Sorriso"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        WhatsApp comercial *
+                        WhatsApp com DDD *
                       </label>
                       <input
                         type="tel"
                         required
                         value={formData.whatsapp}
-                        onChange={(e) => handleTextChange('whatsapp', e.target.value)}
-                        placeholder="(11) 99999-9999"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        onChange={(e) => updateField('whatsapp', e.target.value)}
+                        placeholder="Ex: (11) 98765-4321"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
+
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        E-mail
+                        Seu Melhor E-mail *
                       </label>
                       <input
                         type="email"
+                        required
                         value={formData.email}
-                        onChange={(e) => handleTextChange('email', e.target.value)}
-                        placeholder="contato@suaempresa.com"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        onChange={(e) => updateField('email', e.target.value)}
+                        placeholder="Ex: contato@empresa.com.br"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Instagram
+                        Cidade e Estado (UF)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.cityState}
+                        onChange={(e) => updateField('cityState', e.target.value)}
+                        placeholder="Ex: São Caetano do Sul - SP"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Instagram da Empresa (opcional)
                       </label>
                       <input
                         type="text"
                         value={formData.instagram}
-                        onChange={(e) => handleTextChange('instagram', e.target.value)}
-                        placeholder="@suaempresa"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Cidade / Região
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.city}
-                        onChange={(e) => handleTextChange('city', e.target.value)}
-                        placeholder="São Caetano do Sul - SP"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                        onChange={(e) => updateField('instagram', e.target.value)}
+                        placeholder="Ex: @suaempresa"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* STEP 2: Negócio */}
+              {/* ETAPA 2: SOBRE O NEGÓCIO */}
               {currentStep === 2 && (
-                <div className="space-y-5 animate-in fade-in duration-300">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                      Qual é o seu ramo de atuação?
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.businessType}
-                      onChange={(e) => handleTextChange('businessType', e.target.value)}
-                      placeholder="Ex: Ótica, Oficina mecânica, Loja de roupas, Consultório..."
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
-                    />
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="border-b border-white/5 pb-3">
+                    <h3 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                      <Building className="w-5 h-5 text-primary" />
+                      <span>Sobre o seu Negócio</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Conte o que você vende, quem é seu cliente e o objetivo do site.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Ramo de Atuação / Segmento *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.businessSegment}
+                        onChange={(e) => updateField('businessSegment', e.target.value)}
+                        placeholder="Ex: Advocacia, Consultório, Loja de Roupas, Construtora..."
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        O que a sua empresa faz e quais os principais produtos ou serviços? *
+                      </label>
+                      <textarea
+                        rows={3}
+                        required
+                        value={formData.businessSummary}
+                        onChange={(e) => updateField('businessSummary', e.target.value)}
+                        placeholder="Descreva resumidamente os serviços mais importantes que você deseja destacar..."
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                          Quem é o seu Público-Alvo?
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={formData.targetAudience}
+                          onChange={(e) => updateField('targetAudience', e.target.value)}
+                          placeholder="Ex: Homens e mulheres de 25 a 50 anos, donos de empresas locais, famílias..."
+                          className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                          Quais são os diferenciais do seu negócio?
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={formData.mainDifferentials}
+                          onChange={(e) => updateField('mainDifferentials', e.target.value)}
+                          placeholder="Ex: 10 anos de mercado, garantia total, atendimento rápido, tecnologia exclusiva..."
+                          className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Qual é o principal objetivo do site?
+                      </label>
+                      <select
+                        value={formData.siteGoal}
+                        onChange={(e) => updateField('siteGoal', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:outline-none focus:border-primary text-sm"
+                      >
+                        <option value="Gerar mais contatos e pedidos de orçamento pelo WhatsApp">
+                          Gerar mais contatos e pedidos de orçamento pelo WhatsApp
+                        </option>
+                        <option value="Apresentar a empresa com autoridade e credibilidade institucional">
+                          Apresentar a empresa com autoridade e credibilidade institucional
+                        </option>
+                        <option value="Agendamento online de consultas ou serviços">
+                          Agendamento online de consultas ou horários
+                        </option>
+                        <option value="Exibir portfólio completo de trabalhos realizados">
+                          Exibir portfólio completo de trabalhos realizados
+                        </option>
+                        <option value="Vender produtos online / Catálogo comercial">
+                          Vender produtos online / Catálogo comercial
+                        </option>
+                        <option value="Outro objetivo">Outro objetivo</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ETAPA 3: ESTRUTURA & RECURSOS */}
+              {currentStep === 3 && (
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="border-b border-white/5 pb-3">
+                    <h3 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-primary" />
+                      <span>Estrutura e Recursos do Site</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Defina as páginas e funcionalidades essenciais que o seu site terá.
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Plano ou serviço desejado
+                    {/* Domínio */}
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
+                      <label className="block text-xs font-semibold text-white">
+                        Já possui Domínio (ex: www.suaempresa.com.br)?
                       </label>
                       <select
-                        value={formData.selectedPlan}
-                        onChange={(e) => handleTextChange('selectedPlan', e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-card border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
+                        value={formData.hasDomain}
+                        onChange={(e) => updateField('hasDomain', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-xs"
                       >
-                        <option value="Plano Essencial">Plano Essencial</option>
-                        <option value="Plano Profissional">Plano Profissional</option>
-                        <option value="Placa Google de Avaliações">Placa Google de Avaliações</option>
-                        <option value="Landing Page">Landing Page</option>
-                        <option value="Projeto Sob Medida">Projeto Sob Medida</option>
+                        <option value="sim">Sim, já tenho registrado</option>
+                        <option value="nao">Não tenho ainda</option>
+                        <option value="preciso_ajuda">Preciso de ajuda da VolpoTech para registrar</option>
                       </select>
+                      {formData.hasDomain === 'sim' && (
+                        <input
+                          type="text"
+                          value={formData.domainName}
+                          onChange={(e) => updateField('domainName', e.target.value)}
+                          placeholder="Informe seu domínio (ex: suaempresa.com.br)"
+                          className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-white text-xs mt-2"
+                        />
+                      )}
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                        Já possui algum site atualmente?
+                    {/* Logotipo */}
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 space-y-2">
+                      <label className="block text-xs font-semibold text-white">
+                        Situação do Logotipo da Empresa:
                       </label>
                       <select
-                        value={formData.hasWebsite}
-                        onChange={(e) => handleTextChange('hasWebsite', e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-card border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
+                        value={formData.hasLogo}
+                        onChange={(e) => updateField('hasLogo', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-xs"
                       >
-                        <option value="Não, será meu primeiro site">Não, será meu primeiro site</option>
-                        <option value="Sim, mas quero renovar completamente">Sim, mas quero renovar</option>
-                        <option value="Tenho apenas redes sociais">Tenho apenas redes sociais</option>
+                        <option value="vetor_alta">Tenho em alta resolução (PNG transparente / vetor / PDF)</option>
+                        <option value="imagem_simples">Tenho apenas foto simples / JPG comum</option>
+                        <option value="preciso_criacao">Não tenho logotipo, preciso de criação</option>
                       </select>
+                      <p className="text-[11px] text-muted-foreground">
+                        Arquivos em vetor ou PNG transparente garantem a melhor qualidade visual no site.
+                      </p>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-2">
-                      Recursos que gostaria de ter no site:
+                  {/* Páginas do Site */}
+                  <div className="space-y-2.5">
+                    <label className="block text-xs font-semibold text-white">
+                      Quais seções ou páginas você gostaria no site? (Selecione as que deseja):
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {featureOptions.map((feat) => {
-                        const checked = formData.features.includes(feat);
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {AVAILABLE_PAGES.map((page) => {
+                        const isChecked = formData.pagesNeeded.includes(page);
                         return (
-                          <button
-                            type="button"
-                            key={feat}
-                            onClick={() => toggleFeature(feat)}
-                            className={`p-3 rounded-xl border text-left text-xs flex items-center justify-between transition-all ${
-                              checked
-                                ? 'bg-primary/15 border-primary text-white font-medium'
+                          <div
+                            key={page}
+                            onClick={() => togglePage(page)}
+                            className={`p-3 rounded-xl border text-xs cursor-pointer flex items-start gap-2.5 transition-all select-none ${
+                              isChecked
+                                ? 'bg-primary/10 border-primary/40 text-white'
                                 : 'bg-white/[0.02] border-white/10 text-muted-foreground hover:border-white/20'
                             }`}
                           >
-                            <span>{feat}</span>
                             <div
-                              className={`w-4 h-4 rounded flex items-center justify-center border ${
-                                checked ? 'bg-primary border-primary text-white' : 'border-white/20'
+                              className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center shrink-0 border ${
+                                isChecked
+                                  ? 'bg-primary border-primary text-white'
+                                  : 'border-white/20 bg-white/5'
                               }`}
                             >
-                              {checked && <Check className="w-3 h-3" />}
+                              {isChecked && <Check className="w-3 h-3" />}
                             </div>
-                          </button>
+                            <span>{page}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Recursos Essenciais */}
+                  <div className="space-y-2.5">
+                    <label className="block text-xs font-semibold text-white">
+                      Recursos e Funcionalidades desejadas:
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {AVAILABLE_FEATURES.map((feat) => {
+                        const isChecked = formData.featuresNeeded.includes(feat);
+                        return (
+                          <div
+                            key={feat}
+                            onClick={() => toggleFeature(feat)}
+                            className={`p-3 rounded-xl border text-xs cursor-pointer flex items-start gap-2.5 transition-all select-none ${
+                              isChecked
+                                ? 'bg-accent/10 border-accent/40 text-white'
+                                : 'bg-white/[0.02] border-white/10 text-muted-foreground hover:border-white/20'
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center shrink-0 border ${
+                                isChecked
+                                  ? 'bg-accent border-accent text-white'
+                                  : 'border-white/20 bg-white/5'
+                              }`}
+                            >
+                              {isChecked && <Check className="w-3 h-3" />}
+                            </div>
+                            <span>{feat}</span>
+                          </div>
                         );
                       })}
                     </div>
@@ -339,94 +768,230 @@ ${formData.goals || 'Gostaria de saber mais informações e iniciar o projeto.'}
                 </div>
               )}
 
-              {/* STEP 3: Visão */}
-              {currentStep === 3 && (
-                <div className="space-y-5 animate-in fade-in duration-300">
+              {/* ETAPA 4: IDENTIDADE & REFERÊNCIAS */}
+              {currentStep === 4 && (
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="border-b border-white/5 pb-3">
+                    <h3 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                      <Palette className="w-5 h-5 text-primary" />
+                      <span>Identidade Visual & Referências</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Ajude-nos a acertar no visual exato que mais agrada você e seu público.
+                    </p>
+                  </div>
+
+                  {/* Estilo Visual */}
+                  <div className="space-y-2.5">
+                    <label className="block text-xs font-semibold text-white">
+                      Qual estilo visual melhor representa o que você quer?
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {VISUAL_STYLES.map((style) => {
+                        const isSelected = formData.visualStyle === style.label;
+                        return (
+                          <div
+                            key={style.id}
+                            onClick={() => updateField('visualStyle', style.label)}
+                            className={`p-4 rounded-xl border cursor-pointer transition-all select-none ${
+                              isSelected
+                                ? 'bg-primary/10 border-primary text-white ring-1 ring-primary/40'
+                                : 'bg-white/[0.02] border-white/10 text-muted-foreground hover:border-white/20'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="font-heading font-semibold text-sm text-white">
+                                {style.label}
+                              </span>
+                              {isSelected && <CheckCircle2 className="w-4 h-4 text-primary" />}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+                              {style.desc}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                      Qual é o principal objetivo do site para sua empresa?
+                      Cores de Preferência ou Paleta da Marca
                     </label>
-                    <textarea
-                      rows={4}
-                      value={formData.goals}
-                      onChange={(e) => handleTextChange('goals', e.target.value)}
-                      placeholder="Ex: Quero aparecer no Google quando alguém buscar por produtos na minha cidade, ter um botão direto para o WhatsApp e exibir meus horários de funcionamento."
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                    <input
+                      type="text"
+                      value={formData.preferredColors}
+                      onChange={(e) => updateField('preferredColors', e.target.value)}
+                      placeholder="Ex: Azul marinho e dourado, Preto fosco com detalhes verdes, Tons pastéis..."
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
                     />
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-xs text-muted-foreground space-y-1">
-                    <p className="font-semibold text-white">Resumo da sua proposta:</p>
-                    <p>• Contato: {formData.name} ({formData.whatsapp})</p>
-                    <p>• Empresa: {formData.company || 'Pessoa Física/Empresa'} - {formData.city}</p>
-                    <p>• Plano: {formData.selectedPlan}</p>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                      Sites que você gosta como referência (concorrentes ou outros segmentos)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={formData.referenceWebsites}
+                      onChange={(e) => updateField('referenceWebsites', e.target.value)}
+                      placeholder="Cole links de 1 a 3 sites que você acha bonitos, modernos ou organizados..."
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                      Existe algo que você NÃO gostaria de ver no seu site?
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.dislikedItems}
+                      onChange={(e) => updateField('dislikedItems', e.target.value)}
+                      placeholder="Ex: Cores muito chamativas, excesso de texto, pop-ups chatos, etc."
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+                    />
                   </div>
                 </div>
               )}
 
-              {/* Navigation Buttons */}
-              <div className="flex items-center justify-between pt-6 border-t border-white/10">
+              {/* ETAPA 5: MATERIAIS & PRAZO */}
+              {currentStep === 5 && (
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="border-b border-white/5 pb-3">
+                    <h3 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary" />
+                      <span>Conteúdo, Prazos & Envio</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Última etapa para recebermos o projeto e enviarmos tudo ao e-mail da VolpoTech.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Você já possui textos e fotos prontos?
+                      </label>
+                      <select
+                        value={formData.hasContentReady}
+                        onChange={(e) => updateField('hasContentReady', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:outline-none focus:border-primary text-sm"
+                      >
+                        <option value="tudo_pronto">Sim, tenho todos os textos e fotos organizados</option>
+                        <option value="parcial">Tenho fotos e ideias, mas preciso de apoio nos textos</option>
+                        <option value="preciso_criacao">Não tenho nada, preciso de criação completa pela VolpoTech</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Qual a sua expectativa de prazo para o lançamento?
+                      </label>
+                      <select
+                        value={formData.deadlineExpectation}
+                        onChange={(e) => updateField('deadlineExpectation', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:outline-none focus:border-primary text-sm"
+                      >
+                        <option value="Normal (1 a 2 semanas)">Normal (1 a 2 semanas) - Prazo padrão</option>
+                        <option value="Urgente (menos de 7 dias)">Urgente (menos de 7 dias) - Tenho pressa</option>
+                        <option value="Sem pressa (1 mês ou mais)">Sem pressa (1 mês ou mais) - Em planejamento</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                      Observações ou detalhes adicionais importantes
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={formData.additionalNotes}
+                      onChange={(e) => updateField('additionalNotes', e.target.value)}
+                      placeholder="Algum detalhe específico, horário de atendimento, integração com sistema externo ou dúvida..."
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm resize-none"
+                    />
+                  </div>
+
+                  {/* Resumo Rápido antes do Envio */}
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2 text-xs">
+                    <span className="font-semibold text-white uppercase tracking-wider text-[11px] block">
+                      Resumo da Solicitação:
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-muted-foreground">
+                      <div>
+                        <strong className="text-gray-300">Empresa:</strong> {formData.companyName || '-'}
+                      </div>
+                      <div>
+                        <strong className="text-gray-300">Responsável:</strong> {formData.contactName || '-'}
+                      </div>
+                      <div>
+                        <strong className="text-gray-300">WhatsApp:</strong> {formData.whatsapp || '-'}
+                      </div>
+                      <div>
+                        <strong className="text-gray-300">Páginas:</strong> {formData.pagesNeeded.length} selecionadas
+                      </div>
+                      <div>
+                        <strong className="text-gray-300">Estilo:</strong> {formData.visualStyle}
+                      </div>
+                      <div>
+                        <strong className="text-gray-300">Destino:</strong> volpootech@gmail.com
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Botões de Ação */}
+              <div className="flex items-center justify-between pt-4 border-t border-white/5">
                 {currentStep > 1 ? (
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all"
+                    onClick={prevStep}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass border border-white/10 hover:border-white/20 text-white font-medium text-xs transition-all"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Voltar</span>
+                    <span>Voltar etapa</span>
                   </button>
                 ) : (
                   <div />
                 )}
 
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5"
-                >
-                  <span>{currentStep === 3 ? 'Finalizar proposta' : 'Avançar'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {currentStep < totalSteps ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-xs transition-all shadow-lg shadow-primary/20"
+                  >
+                    <span>Próxima etapa</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-primary to-accent hover:opacity-95 text-white font-bold text-sm transition-all shadow-xl shadow-primary/25 disabled:opacity-60"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Enviando proposta...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Solicitar Orçamento & Enviar Briefing</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </form>
-          ) : (
-            /* Submission Success & Direct WhatsApp Action */
-            <div className="text-center py-6 space-y-6 animate-in zoom-in-95 duration-500">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/10">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-2xl font-heading font-bold text-white">
-                  Proposta gerada com sucesso, {formData.name}!
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  Para agilizar seu atendimento sem esperar, envie os dados diretamente para nosso WhatsApp oficial.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-left max-w-md mx-auto text-xs space-y-2 font-mono text-gray-300">
-                <p className="text-primary font-bold">📋 Dados da Proposta:</p>
-                <p><strong>Nome:</strong> {formData.name}</p>
-                <p><strong>WhatsApp:</strong> {formData.whatsapp}</p>
-                <p><strong>Plano:</strong> {formData.selectedPlan}</p>
-                <p><strong>Cidade:</strong> {formData.city}</p>
-              </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                  href={dynamicWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white font-semibold text-sm shadow-xl shadow-emerald-500/25 transition-all hover:scale-105"
-                >
-                  <MessageCircle className="w-5 h-5 fill-current" />
-                  <span>Conversar no WhatsApp agora</span>
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+export default QuotePage;

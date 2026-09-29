@@ -346,7 +346,7 @@ export const AdminPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                 <a
-                  href="/briefing"
+                  href="/orcamento"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 sm:flex-initial text-center px-4 py-2 rounded-xl glass border border-white/10 hover:border-white/20 text-white text-xs font-medium transition-colors"
@@ -356,9 +356,9 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const url = `${window.location.origin}/briefing`;
+                    const url = `${window.location.origin}/orcamento`;
                     navigator.clipboard.writeText(url);
-                    showToast('Link do briefing copiado para a área de transferência!');
+                    showToast('Link do formulário copiado para a área de transferência!');
                   }}
                   className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition-all shadow-md shadow-primary/20"
                 >

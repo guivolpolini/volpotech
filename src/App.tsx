@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { SiteProvider } from '@/context/SiteContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
@@ -10,7 +10,6 @@ import { ProjectDetailPage } from '@/pages/ProjectDetailPage';
 import { ServicesPage } from '@/pages/ServicesPage';
 import { QuotePage } from '@/pages/QuotePage';
 import { ContactPage } from '@/pages/ContactPage';
-import { BriefingPage } from '@/pages/BriefingPage';
 import { AdminPage } from '@/pages/AdminPage';
 
 function ScrollToTop() {
@@ -37,7 +36,7 @@ export function App() {
               <Route path="/portfolio/:id" element={<ProjectDetailPage />} />
               <Route path="/servicos" element={<ServicesPage />} />
               <Route path="/orcamento" element={<QuotePage />} />
-              <Route path="/briefing" element={<BriefingPage />} />
+              <Route path="/briefing" element={<Navigate to="/orcamento" replace />} />
               <Route path="/contato" element={<ContactPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<HomePage />} />
