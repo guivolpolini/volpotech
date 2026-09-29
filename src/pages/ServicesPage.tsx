@@ -17,10 +17,10 @@ const highlights = [
     icon: RefreshCw,
     title: 'Sites por assinatura',
     description:
-      'Tenha um site profissional pagando uma mensalidade acessível, sem taxa de criação. Tudo incluso: design sob medida, hospedagem ultrarrápida, domínio próprio, certificado SSL e suporte contínuo.',
+      'Tenha um site profissional com tudo incluso: design sob medida, hospedagem ultrarrápida, domínio próprio, certificado SSL e suporte contínuo.',
     badge: 'Modelo Principal',
     benefits: [
-      'Sem custo inicial alto de desenvolvimento',
+      'Planejamento e desenvolvimento sob medida',
       'Manutenção técnica e segurança inclusas',
       'Alterações de conteúdo mensais inclusas',
       'Transparência e cancelamento sem complicação',

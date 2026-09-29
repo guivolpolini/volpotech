@@ -11,7 +11,7 @@ export const services: ServiceItem[] = [
     id: 'sites-assinatura',
     name: 'Sites por assinatura',
     description:
-      'Site profissional com mensalidade acessível, sem taxa de criação. Tudo incluído: hospedagem, domínio e suporte.',
+      'Site profissional completo com tudo incluído: design sob medida, hospedagem rápida, domínio e suporte contínuo.',
     icon: 'RefreshCw',
     order: 0,
   },

@@ -5,9 +5,9 @@ export interface FaqItem {
 
 export const faqs: FaqItem[] = [
   {
-    question: 'Existe alguma taxa inicial ou custo de criação?',
+    question: 'Como funciona o investimento para ter meu site?',
     answer:
-      'Trabalhamos com condições flexíveis e modelos por assinatura ou sob medida. Entre em contato para alinharmos a melhor opção para o seu momento.',
+      'Trabalhamos com condições flexíveis e modelos por assinatura ou sob medida para a sua necessidade. Entre em contato para receber uma proposta personalizada.',
   },
   {
     question: 'Em quanto tempo meu site fica pronto?',

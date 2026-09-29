@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Criamos sites modernos por assinatura para pequenos e médios negócios em todo o Brasil. Sem taxa de criação e com tudo incluído.
+              Criamos sites modernos e soluções digitais para pequenos e médios negócios em todo o Brasil, com tudo incluído.
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                <span>Sem taxa inicial de criação</span>
+                <span>Projetos 100% personalizados</span>
               </li>
               <li className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
