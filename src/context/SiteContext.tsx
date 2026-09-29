@@ -45,7 +45,70 @@ interface SiteContextType {
   importData: (jsonString: string) => boolean;
 }
 
-const STORAGE_KEY = 'volpotech_site_data_v1';
+const STORAGE_KEY = 'volpotech_site_data_v2';
+
+const safeConfig = (raw: any): SiteConfig => {
+  if (!raw || typeof raw !== 'object') return defaultSiteConfig;
+  return {
+    ...defaultSiteConfig,
+    ...raw,
+    contact: {
+      ...defaultSiteConfig.contact,
+      ...(raw.contact && typeof raw.contact === 'object' ? raw.contact : {}),
+    },
+  };
+};
+
+const safePlans = (raw: any): PlanItem[] => {
+  if (!Array.isArray(raw) || raw.length === 0) return defaultPlans;
+  return raw.map((p, idx) => ({
+    id: p?.id || defaultPlans[idx]?.id || `plan-${idx}`,
+    name: p?.name || 'Plano',
+    price: typeof p?.price === 'number' ? p.price : 99.9,
+    description: p?.description || '',
+    featured: !!p?.featured,
+    features: Array.isArray(p?.features) ? p.features : [],
+    additionalBenefits: Array.isArray(p?.additionalBenefits) ? p.additionalBenefits : undefined,
+  }));
+};
+
+const safeProjects = (raw: any): ProjectItem[] => {
+  if (!Array.isArray(raw) || raw.length === 0) return defaultProjects;
+  return raw.map((p, idx) => ({
+    id: p?.id || defaultProjects[idx]?.id || `project-${idx}`,
+    title: p?.title || '',
+    slug: p?.slug || '',
+    category: p?.category || 'Sites',
+    short_description: p?.short_description || '',
+    description: p?.description || '',
+    main_image: p?.main_image || '/images/hero_showcase.webp',
+    gallery: Array.isArray(p?.gallery) ? p.gallery : [],
+    tech_stack: Array.isArray(p?.tech_stack) ? p.tech_stack : [],
+    features: Array.isArray(p?.features) ? p.features : [],
+    problem: p?.problem || '',
+    solution: p?.solution || '',
+    url: p?.url || '',
+  }));
+};
+
+const safeServices = (raw: any): ServiceItem[] => {
+  if (!Array.isArray(raw) || raw.length === 0) return defaultServices;
+  return raw.map((s, idx) => ({
+    id: s?.id || defaultServices[idx]?.id || `service-${idx}`,
+    name: s?.name || '',
+    description: s?.description || '',
+    icon: s?.icon || 'Layout',
+    order: typeof s?.order === 'number' ? s.order : idx,
+  }));
+};
+
+const safeFaqs = (raw: any): FaqItem[] => {
+  if (!Array.isArray(raw) || raw.length === 0) return defaultFaqs;
+  return raw.map((f) => ({
+    question: f?.question || '',
+    answer: f?.answer || '',
+  }));
+};
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
@@ -53,7 +116,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [config, setConfig] = useState<SiteConfig>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_config`);
-      return saved ? JSON.parse(saved) : defaultSiteConfig;
+      return saved ? safeConfig(JSON.parse(saved)) : defaultSiteConfig;
     } catch {
       return defaultSiteConfig;
     }
@@ -62,7 +125,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [projects, setProjects] = useState<ProjectItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_projects`);
-      return saved ? JSON.parse(saved) : defaultProjects;
+      return saved ? safeProjects(JSON.parse(saved)) : defaultProjects;
     } catch {
       return defaultProjects;
     }
@@ -71,7 +134,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [services, setServices] = useState<ServiceItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_services`);
-      return saved ? JSON.parse(saved) : defaultServices;
+      return saved ? safeServices(JSON.parse(saved)) : defaultServices;
     } catch {
       return defaultServices;
     }
@@ -80,7 +143,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [plans, setPlans] = useState<PlanItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_plans`);
-      return saved ? JSON.parse(saved) : defaultPlans;
+      return saved ? safePlans(JSON.parse(saved)) : defaultPlans;
     } catch {
       return defaultPlans;
     }
@@ -89,7 +152,7 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [faqs, setFaqs] = useState<FaqItem[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_faqs`);
-      return saved ? JSON.parse(saved) : defaultFaqs;
+      return saved ? safeFaqs(JSON.parse(saved)) : defaultFaqs;
     } catch {
       return defaultFaqs;
     }
