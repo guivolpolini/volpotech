@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR" class="dark" style="background-color: #07070a; color: #ffffff; color-scheme: dark;">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <link rel="icon" type="image/png" href="/images/logo.png" />
     <meta name="theme-color" content="#07070a" />
+    <meta name="color-scheme" content="dark" />
+
+    <style>
+      html, body {
+        background-color: #07070a !important;
+        color: #ffffff !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+      #root {
+        min-height: 100vh;
+        background-color: #07070a;
+      }
+    </style>
 
     <title>VolpoTech | Sites Profissionais e Soluções Digitais</title>
     <meta
@@ -53,7 +69,7 @@
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
         "name": "VolpoTech",
-        "description": "Criação de sites por assinatura para pequenos e médios negócios.",
+        "description": "Criação de sites profissionais e soluções digitais sob medida.",
         "areaServed": ["Brasil"],
         "address": {
           "@type": "PostalAddress",
@@ -61,13 +77,24 @@
           "addressRegion": "SP",
           "addressCountry": "BR"
         },
-        "priceRange": "R$ 69,90+",
         "url": "https://volpotech.com.br"
       }
     </script>
   </head>
-  <body class="bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white">
-    <div id="root"></div>
+  <body style="background-color: #07070a; color: #ffffff;" class="bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white">
+    <div id="root">
+      <div style="min-height: 100vh; background-color: #07070a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; color: #ffffff; text-align: center; padding: 20px;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2f6bfb, #00e5ff); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #ffffff; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(47, 107, 251, 0.3);">
+          V
+        </div>
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">
+          Volpo<span style="color: #2f6bfb;">Tech</span>
+        </div>
+        <div style="font-size: 13px; color: #888899;">
+          Carregando soluções digitais...
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
